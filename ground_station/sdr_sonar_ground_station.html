@@ -1,0 +1,3236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OCEAN-SDR™ Adaptive Sonar Ground Station</title>
+  
+  <!-- Modern Typography: Plus Jakarta Sans for UI + JetBrains Mono for Telemetry -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       DESIGN SYSTEM TOKENS — PREMIUM SOPHISTICATED LIGHT THEME
+       ========================================================================== */
+    :root {
+      /* Foundation Neutrals */
+      --bg-base: #F8FAFC;
+      --bg-subtle: #F1F5F9;
+      --surface-card: #FFFFFF;
+      --surface-elevated: #FFFFFF;
+      --surface-inset: #F8FAFC;
+      
+      /* Subtle Architectural Borders */
+      --border-subtle: #E2E8F0;
+      --border-medium: #CBD5E1;
+      --border-focus: #4F46E5;
+      
+      /* Deep softened typography */
+      --text-primary: #0F172A;
+      --text-secondary: #475569;
+      --text-tertiary: #64748B;
+      --text-muted: #94A3B8;
+
+      /* Confident Royal / Electric Violet Accent System */
+      --violet-primary: #4F46E5;
+      --violet-hover: #4338CA;
+      --violet-active: #3730A3;
+      --violet-surface: #EEF2FF;
+      --violet-border: #C7D2FE;
+      --violet-text: #4338CA;
+
+      /* Semantic Contextual Colors */
+      --emerald-primary: #059669;
+      --emerald-surface: #ECFDF5;
+      --emerald-border: #A7F3D0;
+      --emerald-text: #065F46;
+
+      --amber-primary: #D97706;
+      --amber-surface: #FFFBEB;
+      --amber-border: #FDE68A;
+      --amber-text: #92400E;
+
+      --rose-primary: #E11D48;
+      --rose-surface: #FFF1F2;
+      --rose-border: #FECDD3;
+      --rose-text: #9F1239;
+
+      --cyan-primary: #0284C7;
+      --cyan-surface: #F0F9FF;
+      --cyan-border: #BAE6FD;
+      --cyan-text: #0369A1;
+
+      /* Restrained Multi-Layer Box Shadows */
+      --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+      --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.04), 0 6px 16px -2px rgba(15, 23, 42, 0.03);
+      --shadow-hover: 0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 12px 24px -4px rgba(15, 23, 42, 0.06);
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 18px;
+      --radius-pill: 9999px;
+
+      --font-ui: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+      --terminal-font-size: 14px;
+    }
+
+    /* Base Reset */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--font-ui);
+      min-height: 100vh;
+      padding: 24px 32px 48px;
+      overflow-x: hidden;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background-image: 
+        radial-gradient(circle at 10% 10%, rgba(79, 70, 229, 0.035) 0%, transparent 45%),
+        radial-gradient(circle at 90% 90%, rgba(5, 150, 105, 0.025) 0%, transparent 45%);
+    }
+
+    /* ==========================================================================
+       HEADER & NAVIGATION BAR
+       ========================================================================== */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .brand-container {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand-badge-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+      border: 1px solid var(--violet-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--violet-primary);
+      box-shadow: var(--shadow-xs);
+      position: relative;
+    }
+
+    .brand-badge-icon svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .brand-titles {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-pill-tag {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      background: var(--violet-surface);
+      color: var(--violet-primary);
+      border: 1px solid var(--violet-border);
+      border-radius: var(--radius-pill);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .brand-sub {
+      font-size: 0.8rem;
+      color: var(--text-tertiary);
+      font-weight: 500;
+      letter-spacing: -0.01em;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* Live Hardware Status Pill */
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 0.78rem;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      font-weight: 600;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      letter-spacing: -0.01em;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      transition: all 0.2s ease;
+    }
+
+    .dot.live {
+      background: var(--emerald-primary);
+      box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.2);
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.15); }
+    }
+
+    /* Buttons */
+    .btn {
+      font-family: var(--font-ui);
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1px solid var(--border-subtle);
+      background: var(--surface-card);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-xs);
+      outline: none;
+      text-decoration: none;
+      user-select: none;
+    }
+
+    .btn:hover {
+      background: var(--bg-subtle);
+      border-color: var(--border-medium);
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: var(--shadow-xs);
+    }
+
+    .btn svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 2;
+    }
+
+    /* Primary USB Button */
+    .btn-connect {
+      background: var(--surface-card);
+      border-color: var(--border-medium);
+      color: var(--text-primary);
+    }
+
+    .btn-connect.connected {
+      background: var(--emerald-surface);
+      border-color: var(--emerald-border);
+      color: var(--emerald-text);
+      font-weight: 700;
+    }
+
+    /* Mic Scope Button */
+    .btn-mic {
+      background: var(--surface-card);
+      color: var(--text-secondary);
+    }
+
+    .btn-mic.active {
+      background: var(--amber-surface);
+      border-color: var(--amber-border);
+      color: var(--amber-text);
+      font-weight: 700;
+      box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
+    }
+
+    /* Audio Engine Toggle Button */
+    .btn-engine {
+      background: var(--violet-surface);
+      border-color: var(--violet-border);
+      color: var(--violet-text);
+      font-weight: 600;
+    }
+
+    .btn-engine:hover {
+      background: #E0E7FF;
+      border-color: #A5B4FC;
+    }
+
+    /* Hero Autonomous Mission CTA */
+    .btn-hero-action {
+      background: var(--violet-primary);
+      border-color: var(--violet-primary);
+      color: #FFFFFF;
+      font-weight: 700;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+
+    .btn-hero-action:hover {
+      background: var(--violet-hover);
+      border-color: var(--violet-hover);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08), 0 6px 16px rgba(79, 70, 229, 0.35);
+      transform: translateY(-1px);
+    }
+
+    /* =========================================================
+       HERO KPI CARDS (CLEAN LIGHT ANALYTICS)
+       ========================================================= */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .kpi-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 20px 22px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card:hover {
+      border-color: var(--border-medium);
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-2px);
+    }
+
+    .kpi-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .kpi-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .kpi-title svg {
+      width: 14px;
+      height: 14px;
+      stroke-width: 2.2;
+      color: var(--text-tertiary);
+    }
+
+    .kpi-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: var(--radius-pill);
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+    }
+
+    .badge-clear {
+      background: var(--emerald-surface);
+      color: var(--emerald-text);
+      border: 1px solid var(--emerald-border);
+    }
+
+    .badge-cloudy {
+      background: var(--amber-surface);
+      color: var(--amber-text);
+      border: 1px solid var(--amber-border);
+    }
+
+    .badge-mud {
+      background: var(--rose-surface);
+      color: var(--rose-text);
+      border: 1px solid var(--rose-border);
+    }
+
+    .kpi-value-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin: 4px 0 10px;
+    }
+
+    .kpi-huge-number {
+      font-family: var(--font-mono);
+      font-size: 2.7rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1;
+      letter-spacing: -0.04em;
+      font-feature-settings: "tnum";
+    }
+
+    .kpi-unit {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      font-family: var(--font-ui);
+    }
+
+    /* Clean subtle meter bar */
+    .meter-bar-bg {
+      height: 6px;
+      background: var(--bg-subtle);
+      border-radius: var(--radius-pill);
+      overflow: hidden;
+      margin: 10px 0 12px;
+    }
+
+    .meter-bar-fill {
+      height: 100%;
+      background: var(--emerald-primary);
+      border-radius: var(--radius-pill);
+      width: 15%;
+      transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
+    }
+
+    .kpi-footer {
+      font-size: 0.78rem;
+      color: var(--text-tertiary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 10px;
+      margin-top: 4px;
+    }
+
+    /* =========================================================
+       AUTONOMOUS SWITCH ALERT BANNER
+       ========================================================= */
+    .switch-banner {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 4px solid var(--emerald-primary);
+      border-radius: var(--radius-md);
+      padding: 14px 20px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
+    }
+
+    .switch-banner-text {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .switch-banner-icon {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--emerald-primary);
+    }
+
+    .switch-banner-metric {
+      font-size: 0.78rem;
+      font-family: var(--font-mono);
+      color: var(--text-secondary);
+      font-weight: 600;
+      background: var(--bg-subtle);
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-subtle);
+    }
+
+    /* =========================================================
+       MAIN GRID LAYOUT (2 COLUMNS: METRICS + OBSERVABILITY)
+       ========================================================= */
+    .dashboard-main {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 1120px) {
+      .dashboard-main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Panels / Cards */
+    .panel {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .panel:hover {
+      border-color: var(--border-medium);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 14px;
+    }
+
+    .panel-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-title svg {
+      width: 17px;
+      height: 17px;
+      color: var(--violet-primary);
+    }
+
+    .panel-header-badge {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      background: var(--bg-subtle);
+      padding: 3px 9px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-subtle);
+    }
+
+    /* Oscilloscope Viewport */
+    .scope-container {
+      position: relative;
+      background: #FAFCFF;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+      box-shadow: inset 0 1px 3px rgba(15, 23, 42, 0.03);
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .scope-reticle {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image: 
+        linear-gradient(to right, rgba(203, 213, 225, 0.45) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(203, 213, 225, 0.45) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    .scope-overlay {
+      position: absolute;
+      top: 12px;
+      left: 16px;
+      display: flex;
+      gap: 16px;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--text-tertiary);
+      pointer-events: none;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(4px);
+      padding: 5px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-sm);
+      z-index: 10;
+    }
+
+    .scope-tab {
+      padding: 4px 10px;
+      font-size: 0.72rem;
+      font-family: var(--font-sans);
+      font-weight: 600;
+      border-radius: calc(var(--radius-sm) - 2px);
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .scope-tab:hover {
+      color: var(--text-primary);
+    }
+    .scope-tab.active {
+      background: #FFFFFF;
+      color: var(--violet-primary);
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+      font-weight: 700;
+    }
+
+    .scope-trig-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--emerald-primary);
+      margin-right: 4px;
+      box-shadow: 0 0 6px var(--emerald-primary);
+      transition: all 0.1s ease;
+    }
+    .scope-trig-dot.flash {
+      transform: scale(1.4);
+      box-shadow: 0 0 10px #10B981, 0 0 16px #34D399;
+    }
+
+    .scope-controls-overlay {
+      position: absolute;
+      bottom: 12px;
+      right: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(4px);
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+      font-family: var(--font-mono);
+      z-index: 10;
+    }
+
+    .tb-btn {
+      padding: 3px 8px;
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      border: 1px solid var(--border-subtle);
+      background: #FFFFFF;
+      border-radius: 3px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .tb-btn:hover {
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+    }
+    .tb-btn.active {
+      background: var(--violet-surface);
+      color: var(--violet-primary);
+      border-color: var(--violet-subtle);
+      font-weight: 700;
+    }
+
+    /* State Transition Machine Nodes */
+    .state-nodes {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .state-node {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .state-node:hover {
+      border-color: var(--border-medium);
+      background: #FFFFFF;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .state-node.active {
+      background: #FFFFFF;
+      border: 2px solid var(--violet-primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .state-node-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      margin-bottom: 2px;
+    }
+
+    .state-node-sub {
+      font-size: 0.72rem;
+      color: var(--text-tertiary);
+      font-family: var(--font-mono);
+    }
+
+    .state-node-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+    }
+
+    /* Simulation Slider Container */
+    .sim-slider-box {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .sim-slider-box input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--border-medium);
+      outline: none;
+      cursor: pointer;
+      accent-color: var(--violet-primary);
+    }
+
+    /* =========================================================
+       TERMINAL / TELEMETRY LOG (HIGH-END LIGHT IDE STYLE)
+       ========================================================= */
+    .terminal-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: 100%;
+    }
+
+    .terminal-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .terminal-box {
+      background: #F8FAFC;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      height: 380px;
+      overflow-y: auto;
+      font-family: var(--font-mono);
+      font-size: var(--terminal-font-size);
+      line-height: 1.6;
+      color: var(--text-primary);
+      box-shadow: inset 0 1px 3px rgba(15, 23, 42, 0.03);
+      scroll-behavior: smooth;
+    }
+
+    .terminal-line {
+      margin-bottom: 4px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      word-break: break-all;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.1s ease;
+    }
+
+    .terminal-line:hover {
+      background: #EDF2F7;
+    }
+
+    .terminal-line.switch {
+      background: var(--emerald-surface);
+      border-left: 3px solid var(--emerald-primary);
+      color: var(--emerald-text);
+      font-weight: 700;
+      padding: 6px 10px;
+    }
+
+    .terminal-line.alert {
+      background: var(--amber-surface);
+      border-left: 3px solid var(--amber-primary);
+      color: var(--amber-text);
+      font-weight: 700;
+      padding: 6px 10px;
+    }
+
+    /* Mini Explainer Card */
+    .explainer-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+
+    .explainer-title {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--violet-primary);
+      margin-bottom: 6px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .explainer-body {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =========================================================
+       TOP NAVIGATION BAR
+       ========================================================= -->
+  <header>
+    <div class="brand-container">
+      <div class="brand-badge-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M12 3a9 9 0 0 1 9 9"/>
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M12 8a4 4 0 0 1 4 4"/>
+          <circle cx="12" cy="12" r="1"/>
+        </svg>
+      </div>
+      <div class="brand-titles">
+        <div class="brand-title">
+          <span>OCEAN-SDR™ Adaptive Sonar</span>
+          <span class="brand-pill-tag">Hardware Telemetry</span>
+        </div>
+        <div class="brand-sub">Autonomous Acoustic Transmitter • Closed-Loop Ground Station</div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <!-- Connection Status -->
+      <div class="badge-status">
+        <span class="dot" id="statusDot"></span>
+        <span id="statusText">AWAITING NUCLEO USB</span>
+      </div>
+
+      <!-- Connect Button -->
+      <button class="btn btn-connect" id="btnConnect">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M12 2v6m0 8v6M4.93 4.93l4.24 4.24m5.66 5.66l4.24 4.24M2 12h6m8 0h6M4.93 19.07l4.24-4.24m5.66-5.66l4.24-4.24"/>
+        </svg>
+        <span id="btnConnectText">Connect Nucleo (USB)</span>
+      </button>
+
+      <!-- Laptop Mic Scope Button -->
+      <button class="btn btn-mic" id="btnMic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+          <line x1="12" x2="12" y1="19" y2="22"/>
+        </svg>
+        <span id="btnMicText">Laptop Mic Scope</span>
+      </button>
+
+      <!-- Audio Engine Toggle Button -->
+      <button class="btn btn-engine" id="btnAudioEngine">
+        <span id="btnAudioEngineIcon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/>
+            <path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/>
+            <circle cx="12" cy="12" r="2"/>
+            <path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/>
+            <path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/>
+          </svg>
+        </span>
+        <span id="btnAudioEngineText">Tactical LFM Chirp</span>
+      </button>
+
+      <!-- Autonomous Plume Mission Button -->
+      <button class="btn btn-hero-action" id="btnAutoAdapt">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <polygon points="5 3 19 12 5 21 5 3"/>
+        </svg>
+        <span id="btnAutoAdaptText">Run Autonomous Plume Mission</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Hardware Sensor Link Bus (Real-Time Physical vs Simulated Detection) -->
+  <div style="background:var(--surface-card); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:10px 16px; margin-bottom:18px; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px; box-shadow:var(--shadow-card);">
+    <div style="display:flex; align-items:center; gap:8px; font-size:0.75rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em;">
+      <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--emerald-primary);" id="busDot"></span>
+      Hardware Sensor Link Bus (4-Channel Binary Matrix):
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:10px; font-size:0.75rem; font-family:var(--font-mono);">
+      <span id="busTurb" style="background:var(--emerald-surface); color:var(--emerald-text); border:1px solid var(--emerald-border); padding:3px 10px; border-radius:var(--radius-pill); font-weight:700;">PA0 (Turbidity): 1 [ONLINE]</span>
+      <span id="busDepth" style="background:var(--emerald-surface); color:var(--emerald-text); border:1px solid var(--emerald-border); padding:3px 10px; border-radius:var(--radius-pill); font-weight:700;">PA1 (Depth Pot): 1 [ONLINE]</span>
+      <span id="busTemp" style="background:var(--emerald-surface); color:var(--emerald-text); border:1px solid var(--emerald-border); padding:3px 10px; border-radius:var(--radius-pill); font-weight:700;">PA10 (DS18B20): 1 [ONLINE]</span>
+      <span id="busSal" style="background:var(--emerald-surface); color:var(--emerald-text); border:1px solid var(--emerald-border); padding:3px 10px; border-radius:var(--radius-pill); font-weight:700;">PC0 (Salinity Pot): 1 [ONLINE]</span>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       HERO KPI METRICS CARDS
+       ========================================================= -->
+  <div class="kpi-grid">
+    
+    <!-- 1. Live Turbidity (Sensor PA0) -->
+    <div class="kpi-card turbidity">
+      <div class="kpi-header">
+        <span class="kpi-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+          </svg>
+          Water Turbidity
+        </span>
+        <span class="kpi-badge badge-clear" id="turbidityCondition">CLEAR WATER</span>
+      </div>
+      <div class="kpi-value-row">
+        <div class="kpi-huge-number" id="valTurbidity">12.0</div>
+        <div class="kpi-unit">NTU</div>
+      </div>
+      <div class="meter-bar-bg">
+        <div class="meter-bar-fill" id="meterTurbidity" style="width: 5%;"></div>
+      </div>
+      <div class="kpi-footer">
+        <span>Optical (TSW-20 / PA0)</span>
+        <span id="turbiditySensorHealth" style="color:var(--emerald-primary); font-weight:700;">1 (ONLINE)</span>
+      </div>
+    </div>
+
+    <!-- 2. Ocean Water Temperature (DS18B20 on PA10) -->
+    <div class="kpi-card temperature">
+      <div class="kpi-header">
+        <span class="kpi-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>
+          </svg>
+          Water Temperature
+        </span>
+        <span class="kpi-badge badge-clear" id="tempCondition">NORMAL</span>
+      </div>
+      <div class="kpi-value-row">
+        <div class="kpi-huge-number" id="valTemperature">24.5</div>
+        <div class="kpi-unit">°C</div>
+      </div>
+      <div class="meter-bar-bg">
+        <div class="meter-bar-fill" id="meterTemp" style="width: 49%; background: #06B6D4;"></div>
+      </div>
+      <div class="kpi-footer">
+        <span id="valSoundSpeed" style="color:var(--cyan-text, #0891B2); font-weight:700;">c ≈ 1528 m/s</span>
+        <span id="tempSensorHealth" style="color:var(--emerald-primary); font-weight:700;">1 (ONLINE)</span>
+      </div>
+    </div>
+
+    <!-- 3. Hydrostatic Depth & Pressure (Potentiometer on PA1) -->
+    <div class="kpi-card depth">
+      <div class="kpi-header">
+        <span class="kpi-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+          Vehicle Depth
+        </span>
+        <span class="kpi-badge badge-clear" id="depthCondition">EPIPELAGIC</span>
+      </div>
+      <div class="kpi-value-row">
+        <div class="kpi-huge-number" id="valDepthLarge">45.0</div>
+        <div class="kpi-unit">METERS</div>
+      </div>
+      <div class="meter-bar-bg">
+        <div class="meter-bar-fill" id="meterDepth" style="width: 4.5%; background: var(--emerald-primary);"></div>
+      </div>
+      <div class="kpi-footer">
+        <span id="valPressure" style="font-weight:700; color:var(--text-secondary);">P: 5.4 bar</span>
+        <span id="depthSensorHealth" style="color:var(--emerald-primary); font-weight:700;">1 (ONLINE)</span>
+      </div>
+    </div>
+
+    <!-- 4. Seawater Salinity (Potentiometer on PC0) -->
+    <div class="kpi-card salinity">
+      <div class="kpi-header">
+        <span class="kpi-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+          </svg>
+          Water Salinity
+        </span>
+        <span class="kpi-badge badge-clear" id="salCondition">OCEANIC</span>
+      </div>
+      <div class="kpi-value-row">
+        <div class="kpi-huge-number" id="valSalinity">35.0</div>
+        <div class="kpi-unit">PSU</div>
+      </div>
+      <div class="meter-bar-bg">
+        <div class="meter-bar-fill" id="meterSal" style="width: 83%; background: #3B82F6;"></div>
+      </div>
+      <div class="kpi-footer">
+        <span id="valSalDelta" style="font-weight:700; color:#2563EB;">Δc: +0.0 m/s</span>
+        <span id="salSensorHealth" style="color:var(--emerald-primary); font-weight:700;">1 (ONLINE)</span>
+      </div>
+    </div>
+
+    <!-- 4. Acoustic Transmitter Carrier Frequency & Pitch -->
+    <div class="kpi-card frequency">
+      <div class="kpi-header">
+        <span class="kpi-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+          </svg>
+          Acoustic Output
+        </span>
+        <span class="kpi-badge badge-clear" id="valPitchTag">HIGH WHISTLE</span>
+      </div>
+      <div class="kpi-value-row">
+        <div class="kpi-huge-number" id="valSpeakerFreq">3,200</div>
+        <div class="kpi-unit">Hz</div>
+      </div>
+      <div class="meter-bar-bg">
+        <div class="meter-bar-fill" id="meterFreq" style="width: 100%; background: var(--violet-primary);"></div>
+      </div>
+      <div class="kpi-footer">
+        <span>TIM3 PWM (PA6) → TDA2030</span>
+        <span id="carrierEq" style="font-weight:600; color:var(--violet-text);">450 kHz Acoustic Eq.</span>
+      </div>
+    </div>
+
+    <!-- 5. Active Sonar Profile -->
+    <div class="kpi-card mode">
+      <div class="kpi-header">
+        <span class="kpi-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="12" cy="12" r="10"/>
+            <circle cx="12" cy="12" r="6"/>
+            <circle cx="12" cy="12" r="2"/>
+          </svg>
+          Active SDR Profile
+        </span>
+        <span class="kpi-badge badge-clear" id="valModeBadge">MODE 0</span>
+      </div>
+      <div class="kpi-value-row">
+        <div class="kpi-huge-number" style="font-size: 1.85rem; letter-spacing: -0.02em;" id="valModeTitle">HIGH RESOLUTION</div>
+      </div>
+      <div style="font-size:0.8rem; color:var(--text-secondary); margin-bottom: 8px;" id="valModeSub">
+        Clear water optimization (Maximum target resolution)
+      </div>
+      <div class="kpi-footer">
+        <span>Closed-Loop Hysteresis</span>
+        <span style="color:var(--emerald-primary); font-weight:700;">ACTIVE</span>
+      </div>
+    </div>
+
+    <!-- 6. Estimated Acoustic SNR & Absorption Loss -->
+    <div class="kpi-card snr">
+      <div class="kpi-header">
+        <span class="kpi-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M2 20h.01"/>
+            <path d="M7 20v-4"/>
+            <path d="M12 20v-8"/>
+            <path d="M17 20V4"/>
+          </svg>
+          Sonar SNR & Absorption
+        </span>
+        <span class="kpi-badge badge-clear" id="snrQuality">OPTIMAL</span>
+      </div>
+      <div class="kpi-value-row">
+        <div class="kpi-huge-number" id="valSNR">26.4</div>
+        <div class="kpi-unit">dB SNR</div>
+      </div>
+      <div class="meter-bar-bg">
+        <div class="meter-bar-fill" id="meterSNR" style="width: 85%; background: var(--emerald-primary);"></div>
+      </div>
+      <div class="kpi-footer">
+        <span id="valAlpha" style="color:var(--violet-text); font-weight:700;">Absorption α: 97.0 dB/km</span>
+        <span id="valDepth">Depth: 45.0 m</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Autonomous Adaptation Alert Banner -->
+  <div class="switch-banner" id="adaptationAlertBanner">
+    <div class="switch-banner-text">
+      <div class="switch-banner-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+        </svg>
+      </div>
+      <span id="switchBannerMsg">Autonomous Decision Engine Active: Acoustic carrier frequency dynamically matches water turbidity in real time!</span>
+    </div>
+    <div class="switch-banner-metric">
+      LATENCY: &lt; 30 ms
+    </div>
+  </div>
+
+  <!-- =========================================================
+       MAIN DASHBOARD GRID
+       ========================================================= -->
+  <div class="dashboard-main">
+
+    <!-- LEFT COLUMN: Live Oscilloscope, FFT, History Strip Chart & State Machine -->
+    <div style="display:flex; flex-direction:column; gap:20px;">
+      
+      <!-- Oscilloscope Panel -->
+      <div class="panel">
+        <div class="panel-header" style="flex-wrap:wrap; gap:10px;">
+          <div class="panel-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+            <span>Digital Oscilloscope (Acoustic Chirp Waveform)</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <div class="scope-mode-tabs" style="display:flex; background:var(--surface-sunken); padding:2px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+              <button type="button" class="scope-tab active" id="tabScopeChirp">🌊 Chirp & Echo</button>
+              <button type="button" class="scope-tab" id="tabScopeCarrier">⚡ Live Carrier</button>
+              <button type="button" class="scope-tab" id="tabScopeMic">🎤 Mic Scope</button>
+            </div>
+            <span class="panel-header-badge" id="scopeSourceLabel" style="color:var(--emerald-primary); font-weight:700;">SOURCE: STM32 DMA CHIRP (PA6)</span>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:16px; align-items:stretch; flex-wrap:wrap;">
+          
+          <!-- LEFT / MAIN: Scope Screen -->
+          <div class="scope-container" style="flex:1; min-width:480px;">
+            <canvas id="scopeCanvas" width="800" height="420"></canvas>
+            <div class="scope-reticle"></div>
+            
+            <div class="scope-overlay">
+              <div><span class="scope-trig-dot" id="scopeTrigLed"></span><span id="scopeTrigStatus" style="font-weight:700; color:var(--emerald-primary);">TRIG'D [AUTO]</span></div>
+              <div>CH1: <span id="scopeChLabel" style="color:var(--violet-primary); font-weight:700;">LFM CHIRP (PA6)</span></div>
+              <div>Vpp: <span id="scopeVppVal" style="color:var(--text-primary); font-weight:700;">3.30 V</span></div>
+              <div>FREQ: <span id="scopeFreqVal" style="color:var(--text-primary); font-weight:700;">3,200 Hz</span></div>
+              <div>TIMEBASE: <span id="tbValue" style="color:var(--text-primary); font-weight:700;">50 ms/div</span></div>
+            </div>
+
+            <div class="scope-controls-overlay">
+              <button type="button" class="tb-btn" id="btnSinglePing" style="color:var(--emerald-text); border-color:var(--emerald-subtle); background:var(--emerald-surface); font-weight:700;">▶ Ping Trigger</button>
+              <span style="color:var(--text-tertiary); font-size:10px;">|</span>
+              <span style="color:var(--text-secondary); font-size:11px; font-weight:600;">TIMEBASE:</span>
+              <button type="button" class="tb-btn" data-tb="20">20 µs</button>
+              <button type="button" class="tb-btn active" data-tb="50">50 µs</button>
+              <button type="button" class="tb-btn" data-tb="100">100 µs</button>
+            </div>
+          </div>
+
+          <!-- RIGHT / SIDE: Environmental Parameter Sliders & Live Physics -->
+          <div class="sim-slider-box" id="simSliderBox" style="width:280px; flex-shrink:0; display:flex; flex-direction:column; justify-content:space-between; background:var(--surface-sunken); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:16px;">
+            
+            <div style="font-size:0.80rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--violet-primary); border-bottom:1px solid var(--border-subtle); padding-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span>🎛️ Scope Physics Simulator</span>
+            </div>
+
+            <!-- 1. Turbidity Slider -->
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:0.78rem; font-weight:600; color:var(--text-secondary); margin-bottom:4px;">
+                <span>🌊 Turbidity (NTU)</span>
+                <span id="sliderValDisplay" style="color:var(--text-primary); font-family:var(--font-mono); font-weight:700;">12 NTU</span>
+              </div>
+              <input type="range" id="sliderTurbidity" min="0" max="300" value="12" step="1">
+              <div style="font-size:0.68rem; color:var(--text-tertiary); margin-top:2px;">Attenuates seabed echo height</div>
+            </div>
+
+            <!-- 2. Depth Slider -->
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:0.78rem; font-weight:600; color:var(--text-secondary); margin-bottom:4px;">
+                <span>⚓ Vehicle Depth (0 - 1000 m)</span>
+                <span id="sliderDepthValDisplay" style="color:var(--text-primary); font-family:var(--font-mono); font-weight:700;">45.0 m</span>
+              </div>
+              <input type="range" id="sliderDepth" min="0" max="1000" value="45" step="1">
+              <div style="font-size:0.68rem; color:var(--text-tertiary); margin-top:2px;">Epipelagic (0-200m) &amp; Mesopelagic (200-1000m) zonation</div>
+            </div>
+
+            <!-- 3. Water Temperature Slider -->
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:0.78rem; font-weight:600; color:var(--text-secondary); margin-bottom:4px;">
+                <span>🌡️ Water Temp (°C)</span>
+                <span id="sliderTempValDisplay" style="color:var(--text-primary); font-family:var(--font-mono); font-weight:700;">24.5 °C</span>
+              </div>
+              <input type="range" id="sliderTemp" min="5" max="45" value="24.5" step="0.5">
+              <div style="font-size:0.68rem; color:var(--text-tertiary); margin-top:2px;">Alters sound velocity (c)</div>
+            </div>
+
+            <!-- 4. Water Salinity Slider -->
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:0.78rem; font-weight:600; color:var(--text-secondary); margin-bottom:4px;">
+                <span>🧂 Salinity (PSU / PC0)</span>
+                <span id="sliderSalValDisplay" style="color:var(--text-primary); font-family:var(--font-mono); font-weight:700;">35.0 PSU</span>
+              </div>
+              <input type="range" id="sliderSalinity" min="0" max="42" value="35" step="0.5">
+              <div style="font-size:0.68rem; color:var(--text-tertiary); margin-top:2px;">Fresh (0) to Ocean (35) to Hypersaline (42)</div>
+            </div>
+
+            <!-- Quick Hint -->
+            <div style="font-size:0.70rem; color:var(--text-secondary); background:var(--surface-card); padding:8px 10px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle); line-height:1.35;">
+              💡 <b>Live Link:</b> Moving sliders updates both the mathematical model and the oscilloscope trace in real time.
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- FFT Spectrum Analyzer Panel -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <rect x="3" y="12" width="3" height="8" rx="1"/>
+              <rect x="8.5" y="8" width="3" height="12" rx="1"/>
+              <rect x="14" y="4" width="3" height="16" rx="1"/>
+              <rect x="19.5" y="9" width="3" height="11" rx="1"/>
+            </svg>
+            <span>Real-Time FFT Spectrum (Frequency Domain)</span>
+          </div>
+          <div class="panel-header-badge" style="color:var(--violet-primary);">
+            PEAK: <span id="fftPeakText" style="font-weight:700;">3,200 Hz (450 kHz eq.)</span>
+          </div>
+        </div>
+
+        <div style="height:150px; background:#FAFCFF; border:1px solid var(--border-subtle); border-radius:var(--radius-md); overflow:hidden; position:relative;">
+          <canvas id="fftCanvas" width="800" height="150"></canvas>
+        </div>
+      </div>
+
+      <!-- Real-Time 30-Second Rolling Strip-Chart -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <line x1="18" y1="20" x2="18" y2="10"/>
+              <line x1="12" y1="20" x2="12" y2="4"/>
+              <line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
+            <span>Live Ocean History Strip-Chart (Past 30 Seconds)</span>
+          </div>
+          <div style="display:flex; gap:16px; font-size:0.75rem; font-family:var(--font-mono); font-weight:600;">
+            <span style="color:var(--emerald-primary);">■ Turbidity (NTU)</span>
+            <span style="color:var(--violet-primary);">■ Frequency (Hz)</span>
+          </div>
+        </div>
+
+        <div style="height:170px; background:#FFFFFF; border:1px solid var(--border-subtle); border-radius:var(--radius-md); overflow:hidden; position:relative;">
+          <canvas id="chartCanvas" width="800" height="170"></canvas>
+          <div style="position:absolute; top:8px; left:12px; font-size:0.72rem; font-family:var(--font-mono); color:var(--text-tertiary); pointer-events:none;">
+            REAL-TIME SENSOR RESPONSE & FREQUENCY SHIFT TRACKER
+          </div>
+        </div>
+      </div>
+
+      <!-- State Machine Nodes -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <rect x="2" y="3" width="6" height="6" rx="1"/>
+              <rect x="16" y="3" width="6" height="6" rx="1"/>
+              <rect x="9" y="15" width="6" height="6" rx="1"/>
+              <path d="M5 9v3a2 2 0 0 0 2 2h2m6 0h2a2 2 0 0 0 2-2V9"/>
+            </svg>
+            <span>Autonomous Profile Decision Engine</span>
+          </div>
+          <span class="panel-header-badge">DUAL HYSTERESIS</span>
+        </div>
+
+        <div class="state-nodes">
+          <div class="state-node active" id="nodeMode0">
+            <div>
+              <div class="state-node-title">Mode 0: High-Res</div>
+              <div class="state-node-sub">&lt; 65 NTU • 3,200 Hz</div>
+            </div>
+            <div class="state-node-icon" style="background:var(--emerald-surface); color:var(--emerald-text);">💎</div>
+          </div>
+
+          <div class="state-node" id="nodeMode1">
+            <div>
+              <div class="state-node-title">Mode 1: Balanced</div>
+              <div class="state-node-sub">65-165 NTU • 1,600 Hz</div>
+            </div>
+            <div class="state-node-icon" style="background:var(--amber-surface); color:var(--amber-text);">⚖️</div>
+          </div>
+
+          <div class="state-node" id="nodeMode2">
+            <div>
+              <div class="state-node-title">Mode 2: Deep Pen</div>
+              <div class="state-node-sub">&gt; 165 NTU • 600 Hz</div>
+            </div>
+            <div class="state-node-icon" style="background:var(--rose-surface); color:var(--rose-text);">🛡️</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: Telemetry Console & Scientific Explainer -->
+    <div class="panel" style="justify-content:flex-start;">
+      
+      <div class="panel-header">
+        <div class="panel-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <polyline points="4 17 10 11 4 5"/>
+            <line x1="12" y1="19" x2="20" y2="19"/>
+          </svg>
+          <span>Live STM32 Telemetry Feed</span>
+        </div>
+        <span class="panel-header-badge" style="font-weight:700;">115,200 BAUD (1 Hz)</span>
+      </div>
+
+      <!-- Terminal Controls -->
+      <div class="terminal-controls">
+        <div style="display:flex; gap:6px;">
+          <button class="btn" style="padding:5px 10px; font-size:0.8rem;" id="btnFontMinus">A-</button>
+          <button class="btn" style="padding:5px 10px; font-size:0.8rem;" id="btnFontPlus">A+</button>
+          <button class="btn" style="padding:5px 10px; font-size:0.8rem;" id="btnToggleFormat">Formatted View</button>
+        </div>
+        <button class="btn" style="padding:5px 10px; font-size:0.8rem;" onclick="clearTerminal()">Clear</button>
+      </div>
+
+      <!-- Terminal Stream Box -->
+      <div class="terminal-box" id="terminalLog">
+        <div class="terminal-line switch">
+          <span>⚡ [SYSTEM READY] OCEAN-SDR Ground Station Initialized.</span>
+        </div>
+        <div class="terminal-line">
+          <span>📡 Click "Connect Nucleo (USB)" to establish 115,200 baud Web Serial communication.</span>
+        </div>
+        <div class="terminal-line">
+          <span>🔊 Acoustic carrier profiles: Mode 0 = 3,200 Hz | Mode 1 = 1,600 Hz | Mode 2 = 600 Hz.</span>
+        </div>
+      </div>
+
+      <!-- Scientific Ocean Acoustics: François-Garrison & Range Loss Models -->
+      <div class="panel" style="background:#FFFFFF; border:1px solid var(--border-subtle);">
+        <div class="panel-header" style="padding-bottom:10px; border-bottom:1px solid var(--border-subtle);">
+          <div class="panel-title" style="font-size:0.88rem;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M2 12c2-3 4-3 6 0s4 3 6 0 4-3 6 0"/>
+              <path d="M2 17c2-3 4-3 6 0s4 3 6 0 4-3 6 0"/>
+            </svg>
+            <span>🌊 François-Garrison Ocean Acoustics & Range Loss Model</span>
+          </div>
+          <span class="panel-header-badge" style="color:var(--cyan-primary, #0284C7); background:rgba(2, 132, 199, 0.08); border-color:rgba(2, 132, 199, 0.3);">FG-1982 ENGINE</span>
+        </div>
+
+        <!-- Metric Callout Chips -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.75rem;">
+          <div style="background:var(--surface-sunken); padding:8px 10px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+            <div style="color:var(--text-secondary); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.5px;">FG Absorption α(100k vs 450k)</div>
+            <div style="font-family:var(--font-mono); font-weight:700; color:var(--text-primary); margin-top:2px;" id="fgMetricAlpha">α(100k): 14.8 | α(450k): 95.2 dB/km</div>
+          </div>
+          <div style="background:var(--surface-sunken); padding:8px 10px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+            <div style="color:var(--text-secondary); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.5px;">Acoustic Range Limit (80dB TL)</div>
+            <div style="font-family:var(--font-mono); font-weight:700; color:var(--rose-primary); margin-top:2px;" id="fgMetricRange">HF Cutoff: ~240m | LF Safe: >500m</div>
+          </div>
+        </div>
+
+        <!-- 1. Frequency Absorption Spectrum Canvas -->
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; font-size:0.75rem;">
+            <span style="font-weight:700; color:var(--text-secondary);">1. François-Garrison Chemical Absorption α(f) [10 - 500 kHz]</span>
+            <span style="font-family:var(--font-mono); font-size:0.70rem; color:var(--text-tertiary);">Boric + MgSO₄ + Particulate Mud</span>
+          </div>
+          <div style="height:140px; background:#FAFCFF; border:1px solid var(--border-subtle); border-radius:var(--radius-md); overflow:hidden; position:relative;">
+            <canvas id="fgCanvas" width="480" height="140"></canvas>
+          </div>
+        </div>
+
+        <!-- 2. Transmission Loss vs Acoustic Range Canvas -->
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; font-size:0.75rem;">
+            <span style="font-weight:700; color:var(--text-secondary);">2. Two-Way Range Loss Curve: TL(r) = 20 log₁₀(r) + α·r</span>
+            <span style="font-family:var(--font-mono); font-size:0.70rem; color:var(--text-tertiary);">10m to 500m Target Range</span>
+          </div>
+          <div style="height:150px; background:#FAFCFF; border:1px solid var(--border-subtle); border-radius:var(--radius-md); overflow:hidden; position:relative;">
+            <canvas id="tlCanvas" width="480" height="150"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Quick Explainer Card for Judges -->
+      <div class="explainer-card">
+        <div class="explainer-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px; height:14px;">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="16" x2="12" y2="12"/>
+            <line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+          Autonomous Closed-Loop Principle
+        </div>
+        <p class="explainer-body">
+          High-frequency sound (<b style="color:var(--text-primary);">450 kHz</b> / 3.2 kHz test) yields millimeter resolution but scatters violently in suspended mud. When the <b style="color:var(--violet-primary);">TSW-20 sensor</b> detects rising turbidity, the STM32 autonomously shifts carrier frequency down to <b style="color:var(--amber-primary);">250 kHz</b> or <b style="color:var(--rose-primary);">100 kHz</b> (600 Hz) within 30 ms, cutting acoustic absorption loss by up to <b style="color:var(--text-primary);">80%</b> to preserve vehicle navigation and target detection.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- =========================================================
+       GROUND STATION JAVASCRIPT LOGIC
+       ========================================================= -->
+  <script>
+    // -------------------------------------------------------------
+    // Profiles Definition
+    // -------------------------------------------------------------
+    const PROFILES = [
+      {
+        id: 0,
+        name: "MODE 0: HIGH RESOLUTION",
+        pitch_tag: "HIGH WHISTLE",
+        badge_class: "badge-clear",
+        carrier_hz: 3200,
+        carrier_label: "3,200 Hz",
+        sonar_eq: "450 kHz Eq.",
+        desc: "Optimal for clear water. Maximizes echo cross-range resolution."
+      },
+      {
+        id: 1,
+        name: "MODE 1: BALANCED COASTAL",
+        pitch_tag: "MID HORN",
+        badge_class: "badge-cloudy",
+        carrier_hz: 1600,
+        carrier_label: "1,600 Hz",
+        sonar_eq: "250 kHz Eq.",
+        desc: "Moderate turbidity compromise between penetration & resolution."
+      },
+      {
+        id: 2,
+        name: "MODE 2: DEEP PENETRATION",
+        pitch_tag: "DEEP BASS",
+        badge_class: "badge-mud",
+        carrier_hz: 600,
+        carrier_label: "600 Hz",
+        sonar_eq: "100 kHz Eq.",
+        desc: "Mud plume / high sediment condition. Maximizes acoustic range."
+      }
+    ];
+
+    let currentMode = 0;
+    let liveTurbidity = 12.0;
+    let liveDepth = 45.0;
+    let liveTemp = 24.5;
+    let liveSal = 35.0;
+    let liveSNR = 26.4;
+    let isSerialConnected = false;
+    let isFormattedView = true;
+    let currentFontSizePx = 14;
+
+    // DOM Elements
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    const btnConnect = document.getElementById('btnConnect');
+    const btnConnectText = document.getElementById('btnConnectText');
+    const btnMic = document.getElementById('btnMic');
+    const btnMicText = document.getElementById('btnMicText');
+    const btnAudioEngine = document.getElementById('btnAudioEngine');
+    const btnAudioEngineIcon = document.getElementById('btnAudioEngineIcon');
+    const btnAudioEngineText = document.getElementById('btnAudioEngineText');
+    let activeAudioEngine = 'C';
+
+    const btnAutoAdapt = document.getElementById('btnAutoAdapt');
+    const btnAutoAdaptText = document.getElementById('btnAutoAdaptText');
+
+    const valTurbidity = document.getElementById('valTurbidity');
+    const meterTurbidity = document.getElementById('meterTurbidity');
+    const turbidityCondition = document.getElementById('turbidityCondition');
+
+    const valSpeakerFreq = document.getElementById('valSpeakerFreq');
+    const valPitchTag = document.getElementById('valPitchTag');
+    const meterFreq = document.getElementById('meterFreq');
+    const carrierEq = document.getElementById('carrierEq');
+
+    const valModeTitle = document.getElementById('valModeTitle');
+    const valModeSub = document.getElementById('valModeSub');
+    const valModeBadge = document.getElementById('valModeBadge');
+
+    const valSNR = document.getElementById('valSNR');
+    const meterSNR = document.getElementById('meterSNR');
+    const snrQuality = document.getElementById('snrQuality');
+    const valDepth = document.getElementById('valDepth');
+
+    const adaptationAlertBanner = document.getElementById('adaptationAlertBanner');
+    const switchBannerMsg = document.getElementById('switchBannerMsg');
+
+    const nodeMode0 = document.getElementById('nodeMode0');
+    const nodeMode1 = document.getElementById('nodeMode1');
+    const nodeMode2 = document.getElementById('nodeMode2');
+
+    const terminalLog = document.getElementById('terminalLog');
+    const btnFontPlus = document.getElementById('btnFontPlus');
+    const btnFontMinus = document.getElementById('btnFontMinus');
+    const btnToggleFormat = document.getElementById('btnToggleFormat');
+
+    const sliderTurbidity = document.getElementById('sliderTurbidity');
+    const sliderValDisplay = document.getElementById('sliderValDisplay');
+    const sliderDepth = document.getElementById('sliderDepth');
+    const sliderDepthValDisplay = document.getElementById('sliderDepthValDisplay');
+    const sliderTemp = document.getElementById('sliderTemp');
+    const sliderTempValDisplay = document.getElementById('sliderTempValDisplay');
+    const sliderSalinity = document.getElementById('sliderSalinity');
+    const sliderSalValDisplay = document.getElementById('sliderSalValDisplay');
+
+    // -------------------------------------------------------------
+    // Real-Time Rolling History Buffer (Turbidity & Acoustic Frequency)
+    // -------------------------------------------------------------
+    const MAX_HISTORY = 120;
+    const historyData = [];
+    for (let i = 0; i < MAX_HISTORY; i++) {
+      historyData.push({ turb: 12.0, freq: 3200 });
+    }
+
+    // Push new history point every 150ms
+    setInterval(() => {
+      const currentFreq = PROFILES[currentMode].carrier_hz;
+      historyData.push({ turb: liveTurbidity, freq: currentFreq });
+      if (historyData.length > MAX_HISTORY) historyData.shift();
+    }, 150);
+
+    // Terminal Font Size Controls
+    btnFontPlus.addEventListener('click', () => {
+      if (currentFontSizePx < 22) {
+        currentFontSizePx += 1;
+        terminalLog.style.fontSize = currentFontSizePx + "px";
+      }
+    });
+
+    btnFontMinus.addEventListener('click', () => {
+      if (currentFontSizePx > 11) {
+        currentFontSizePx -= 1;
+        terminalLog.style.fontSize = currentFontSizePx + "px";
+      }
+    });
+
+    btnToggleFormat.addEventListener('click', () => {
+      isFormattedView = !isFormattedView;
+      btnToggleFormat.innerText = isFormattedView ? "Formatted View" : "Raw NMEA";
+    });
+
+    // -------------------------------------------------------------
+    // Web Serial Connection (STM32 ST-Link USB)
+    // -------------------------------------------------------------
+    let serialPort = null;
+    let serialReader = null;
+    let serialWriter = null;
+
+    async function sendSerialCmd(cmd) {
+      if (serialWriter && isSerialConnected) {
+        try {
+          const enc = new TextEncoder();
+          await serialWriter.write(enc.encode(cmd));
+        } catch (e) {
+          console.warn("Serial write error:", e);
+        }
+      }
+    }
+
+    function updateAudioEngineUI(modeChar) {
+      if (!modeChar) return;
+      activeAudioEngine = modeChar;
+      if (modeChar === 'C') {
+        btnAudioEngineText.innerText = "Tactical LFM Chirp";
+        btnAudioEngine.style.background = "var(--violet-surface)";
+        btnAudioEngine.style.borderColor = "var(--violet-border)";
+        btnAudioEngine.style.color = "var(--violet-text)";
+      } else {
+        btnAudioEngineText.innerText = "Melody Demo (Pirates)";
+        btnAudioEngine.style.background = "var(--amber-surface)";
+        btnAudioEngine.style.borderColor = "var(--amber-border)";
+        btnAudioEngine.style.color = "var(--amber-text)";
+      }
+    }
+
+    if (btnAudioEngine) {
+      btnAudioEngine.addEventListener('click', () => {
+        if (activeAudioEngine === 'C') {
+          updateAudioEngineUI('P');
+          sendSerialCmd("P\n");
+          logTerminal("[AUDIO ENGINE] Switched to Melodic Octave-Shifter Demo (Pirates of the Caribbean)", "alert");
+        } else {
+          updateAudioEngineUI('C');
+          sendSerialCmd("C\n");
+          logTerminal("[AUDIO ENGINE] Switched to Real Scientific Sonar LFM Chirp Engine", "switch");
+        }
+      });
+    }
+
+    btnConnect.addEventListener('click', async () => {
+      if (!navigator.serial) {
+        alert("Web Serial API is not supported in this browser. Please open this page in Google Chrome or Microsoft Edge!");
+        return;
+      }
+
+      if (isSerialConnected) {
+        try {
+          if (serialReader) await serialReader.cancel();
+          if (serialWriter) await serialWriter.close();
+          if (serialPort) await serialPort.close();
+        } catch (e) { console.error(e); }
+        setSerialStatus(false);
+        return;
+      }
+
+      try {
+        serialPort = await navigator.serial.requestPort();
+        await serialPort.open({ baudRate: 115200 });
+        serialWriter = serialPort.writable.getWriter();
+        setSerialStatus(true);
+        readSerialLoop();
+      } catch (err) {
+        console.warn("Serial connection canceled or failed:", err);
+      }
+    });
+
+    function setSerialStatus(connected) {
+      isSerialConnected = connected;
+      if (connected) {
+        statusDot.className = "dot live";
+        statusText.innerText = "NUCLEO ST-LINK CONNECTED (115200)";
+        btnConnect.classList.add("connected");
+        btnConnectText.innerText = "Disconnect USB";
+        logTerminal("[USB] Connected to STM32 Virtual COM Port successfully.", "switch");
+      } else {
+        statusDot.className = "dot";
+        statusText.innerText = "AWAITING NUCLEO USB";
+        btnConnect.classList.remove("connected");
+        btnConnectText.innerText = "Connect Nucleo (USB)";
+        logTerminal("[USB] Nucleo disconnected.", "alert");
+      }
+    }
+
+    async function readSerialLoop() {
+      const textDecoder = new TextDecoderStream();
+      serialPort.readable.pipeTo(textDecoder.writable);
+      const reader = textDecoder.readable.getReader();
+      serialReader = reader;
+
+      let lineBuffer = "";
+
+      try {
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          if (value) {
+            lineBuffer += value;
+            let lines = lineBuffer.split("\n");
+            lineBuffer = lines.pop();
+
+            for (let line of lines) {
+              line = line.trim();
+              if (line.length > 0) {
+                parseTelemetryLine(line);
+              }
+            }
+          }
+        }
+      } catch (e) {
+        console.error("Read serial error:", e);
+      } finally {
+        reader.releaseLock();
+      }
+    }
+
+    // Telemetry Line Parser
+    function parseTelemetryLine(line) {
+      const nowTime = new Date().toLocaleTimeString();
+
+      // Check for Mode Switch Alert:
+      if (line.includes("[AUTONOMOUS SWITCH]")) {
+        const turbMatch = line.match(/Turbidity:\s*([\d.]+)/);
+        if (turbMatch) updateTurbidity(parseFloat(turbMatch[1]));
+
+        if (line.includes("HIGH_RES")) applyMode(0);
+        else if (line.includes("BALANCED")) applyMode(1);
+        else if (line.includes("DEEP_PEN")) applyMode(2);
+
+        logTerminal(`⚡ [${nowTime}] ${line}`, "switch");
+        flashBanner(line);
+        return;
+      }
+
+      // Check for $SONAR Telemetry: $SONAR,MODE,TURB,TURB_OK,DEPTH,SNR,ALPHA,AUDIO_MODE,TEMP,SAL,TEMP_OK,DEPTH_OK,SAL_OK
+      if (line.startsWith("$SONAR")) {
+        const parts = line.split(",");
+        if (parts.length >= 4) {
+          const m = parseInt(parts[1]);
+          const t = parseFloat(parts[2]);
+          let turbOk = 1;
+          let d = 15.0;
+          let s = 24.5;
+          let alpha = 92.4;
+          let audioMode = 'C';
+          let tempVal = 24.5;
+          let salVal = 35.0;
+          let tempOk = 1;
+          let depthOk = 1;
+          let salOk = 1;
+
+          let vRail = 12.0;
+          let iPeak = 0.85;
+          let ePulse = 0.012;
+          let eRem = 50.0;
+          let eBudget = 50.0;
+          let tPa = 28.0;
+          let thmState = 0;
+          let govMode = 0;
+
+          if (parts.length >= 24) {
+            turbOk = parseInt(parts[3]);
+            d = parseFloat(parts[4]);
+            s = parseFloat(parts[5]);
+            alpha = parseFloat(parts[6]);
+            audioMode = parts[7].trim().toUpperCase();
+            tempVal = parseFloat(parts[8]);
+            salVal = parseFloat(parts[9]);
+            tempOk = parseInt(parts[10]);
+            depthOk = parseInt(parts[11]);
+            salOk = parseInt(parts[12]);
+            vRail = parseFloat(parts[16]);
+            iPeak = parseFloat(parts[17]);
+            ePulse = parseFloat(parts[18]);
+            eRem = parseFloat(parts[19]);
+            eBudget = parseFloat(parts[20]);
+            tPa = parseFloat(parts[21]);
+            thmState = parseInt(parts[22]);
+            govMode = parseInt(parts[23]);
+          } else if (parts.length >= 13) {
+            turbOk = parseInt(parts[3]);
+            d = parseFloat(parts[4]);
+            s = parseFloat(parts[5]);
+            alpha = parseFloat(parts[6]);
+            audioMode = parts[7].trim().toUpperCase();
+            tempVal = parseFloat(parts[8]);
+            salVal = parseFloat(parts[9]);
+            tempOk = parseInt(parts[10]);
+            depthOk = parseInt(parts[11]);
+            salOk = parseInt(parts[12]);
+          } else if (parts.length >= 10) {
+            turbOk = parseInt(parts[3]);
+            d = parseFloat(parts[4]);
+            s = parseFloat(parts[5]);
+            alpha = parseFloat(parts[6]);
+            audioMode = parts[7].trim().toUpperCase();
+            tempVal = parseFloat(parts[8]);
+            salVal = parseFloat(parts[9]);
+          } else if (parts.length >= 9) {
+            turbOk = parseInt(parts[3]);
+            d = parseFloat(parts[4]);
+            s = parseFloat(parts[5]);
+            alpha = parseFloat(parts[6]);
+            audioMode = parts[7].trim().toUpperCase();
+            tempVal = parseFloat(parts[8]);
+          } else if (parts.length >= 8) {
+            turbOk = parseInt(parts[3]);
+            d = parseFloat(parts[4]);
+            s = parseFloat(parts[5]);
+            alpha = parseFloat(parts[6]);
+            audioMode = parts[7].trim().toUpperCase();
+          } else if (parts.length >= 6) {
+            turbOk = parseInt(parts[3]);
+            d = parseFloat(parts[4]);
+            s = parseFloat(parts[5]);
+          } else {
+            d = parseFloat(parts[3]);
+            s = parseFloat(parts[4]);
+          }
+
+          if (!isNaN(t)) updateTurbidity(t);
+          if (!isNaN(m) && m >= 0 && m <= 2 && m !== currentMode) applyMode(m, true);
+          if (!isNaN(s)) updateSNR(s);
+          if (!isNaN(d)) updateDepth(d);
+          if (!isNaN(tempVal)) updateTemperature(tempVal);
+          if (!isNaN(salVal)) updateSalinity(salVal);
+          if (!isNaN(alpha)) {
+            const alphaEl = document.getElementById('valAlpha');
+            if (alphaEl) alphaEl.innerText = `Absorption α: ${alpha.toFixed(1)} dB/km`;
+          }
+
+          // 4-Channel Binary Sensor Matrix Update
+          updateAllSensorHealth(turbOk, depthOk, tempOk, salOk);
+          updateAudioEngineUI(audioMode);
+          if (typeof triggerScopePing === 'function') triggerScopePing();
+
+          if (isFormattedView) {
+            const p = PROFILES[m] || PROFILES[0];
+            const icon = m === 0 ? "🟢" : (m === 1 ? "🟡" : "🔴");
+            const activeCount = turbOk + depthOk + tempOk + salOk;
+            const sensorStatusTag = `SENSORS: [T:${turbOk} D:${depthOk} C:${tempOk} S:${salOk}] (${activeCount}/4 ONLINE)`;
+            const audioModeTag = audioMode === 'C' ? "LFM CHIRP" : "MELODY DEMO";
+            const govStr = ["PERFORMANCE", "BALANCED", "CONSERVATIVE", "DEPLETED"][govMode] || "PERF";
+            const thmStr = ["NORMAL", "WARNING", "THROTTLED", "SHUTDOWN"][thmState] || "NORM";
+            const pwrTag = `PWR: [${vRail.toFixed(1)}V, ${iPeak.toFixed(2)}A, E_p:${(ePulse*1000).toFixed(1)}mJ, Rem:${eRem.toFixed(1)}J/${eBudget.toFixed(0)}J (${((eRem/eBudget)*100).toFixed(0)}%)] | T_PA:${tPa.toFixed(1)}°C (${thmStr}) | GOV:${govStr}`;
+            logTerminal(`${icon} [${nowTime}] MODE ${m} | Depth: ${d.toFixed(1)} m | Temp: ${tempVal.toFixed(1)} °C | Sal: ${salVal.toFixed(1)} PSU | Turb: ${t.toFixed(1)} NTU | ${pwrTag} | ${sensorStatusTag} | Output: ${p.carrier_label} | SNR: ${s.toFixed(1)} dB | α: ${alpha.toFixed(1)} dB/km | ${audioModeTag}`, "normal");
+          } else {
+            logTerminal(`[${nowTime}] ${line}`, "normal");
+          }
+          return;
+        }
+      }
+
+      // Other messages (e.g. boot banners)
+      logTerminal(`[${nowTime}] ${line}`, "normal");
+    }
+
+    function flashBanner(msg) {
+      switchBannerMsg.innerText = msg;
+      adaptationAlertBanner.style.background = "var(--amber-surface)";
+      adaptationAlertBanner.style.borderColor = "var(--amber-primary)";
+      setTimeout(() => {
+        adaptationAlertBanner.style.background = "var(--surface-card)";
+        adaptationAlertBanner.style.borderColor = "var(--border-subtle)";
+        adaptationAlertBanner.style.borderLeftColor = "var(--emerald-primary)";
+      }, 3000);
+    }
+
+    function updateTurbidity(val) {
+      liveTurbidity = val;
+      valTurbidity.innerText = val.toFixed(1);
+      const pct = Math.min(100, Math.max(2, (val / 300) * 100));
+      meterTurbidity.style.width = pct + "%";
+
+      if (val < 65) {
+        turbidityCondition.innerText = "CLEAR WATER";
+        turbidityCondition.className = "kpi-badge badge-clear";
+        meterTurbidity.style.backgroundColor = "var(--emerald-primary)";
+      } else if (val <= 165) {
+        turbidityCondition.innerText = "BALANCED TURBIDITY";
+        turbidityCondition.className = "kpi-badge badge-cloudy";
+        meterTurbidity.style.backgroundColor = "var(--amber-primary)";
+      } else {
+        turbidityCondition.innerText = "HEAVY MUD / SILT";
+        turbidityCondition.className = "kpi-badge badge-mud";
+        meterTurbidity.style.backgroundColor = "var(--rose-primary)";
+      }
+
+      // Dynamic SNR based on turbidity scattering & depth spreading
+      const dynSNR = Math.max(4.0, 30.0 - (val / 12.0) - (liveDepth / 60.0));
+      updateSNR(dynSNR);
+    }
+
+    function updateAllSensorHealth(turbOk, depthOk, tempOk, salOk) {
+      // 1. Turbidity Sensor (PA0)
+      const elTurb = document.getElementById('turbiditySensorHealth');
+      const busTurb = document.getElementById('busTurb');
+      if (elTurb) {
+        elTurb.innerText = turbOk === 1 ? "1 (ONLINE)" : "0 (DISCONNECTED)";
+        elTurb.style.color = turbOk === 1 ? "var(--emerald-primary)" : "var(--rose-primary)";
+      }
+      if (busTurb) {
+        busTurb.innerText = turbOk === 1 ? "PA0 (Turbidity): 1 [ONLINE]" : "PA0 (Turbidity): 0 [SIMULATED]";
+        busTurb.style.background = turbOk === 1 ? "var(--emerald-surface)" : "var(--rose-surface)";
+        busTurb.style.color = turbOk === 1 ? "var(--emerald-text)" : "var(--rose-text)";
+        busTurb.style.borderColor = turbOk === 1 ? "var(--emerald-border)" : "var(--rose-border)";
+      }
+
+      // 2. Depth Potentiometer (PA1)
+      const elDepth = document.getElementById('depthSensorHealth');
+      const busDepth = document.getElementById('busDepth');
+      if (elDepth) {
+        elDepth.innerText = depthOk === 1 ? "1 (ONLINE)" : "0 (SIMULATED)";
+        elDepth.style.color = depthOk === 1 ? "var(--emerald-primary)" : "var(--rose-primary)";
+      }
+      if (busDepth) {
+        busDepth.innerText = depthOk === 1 ? "PA1 (Depth Pot): 1 [ONLINE]" : "PA1 (Depth Pot): 0 [SIMULATED]";
+        busDepth.style.background = depthOk === 1 ? "var(--emerald-surface)" : "var(--rose-surface)";
+        busDepth.style.color = depthOk === 1 ? "var(--emerald-text)" : "var(--rose-text)";
+        busDepth.style.borderColor = depthOk === 1 ? "var(--emerald-border)" : "var(--rose-border)";
+      }
+
+      // 3. DS18B20 Temperature Probe (PA10)
+      const elTemp = document.getElementById('tempSensorHealth');
+      const busTemp = document.getElementById('busTemp');
+      if (elTemp) {
+        elTemp.innerText = tempOk === 1 ? "1 (ONLINE)" : "0 (FALLBACK)";
+        elTemp.style.color = tempOk === 1 ? "var(--emerald-primary)" : "var(--rose-primary)";
+      }
+      if (busTemp) {
+        busTemp.innerText = tempOk === 1 ? "PA10 (DS18B20): 1 [ONLINE]" : "PA10 (DS18B20): 0 [FALLBACK]";
+        busTemp.style.background = tempOk === 1 ? "var(--emerald-surface)" : "var(--rose-surface)";
+        busTemp.style.color = tempOk === 1 ? "var(--emerald-text)" : "var(--rose-text)";
+        busTemp.style.borderColor = tempOk === 1 ? "var(--emerald-border)" : "var(--rose-border)";
+      }
+
+      // 4. Salinity Potentiometer (PC0)
+      const elSal = document.getElementById('salSensorHealth');
+      const busSal = document.getElementById('busSal');
+      if (elSal) {
+        elSal.innerText = salOk === 1 ? "1 (ONLINE)" : "0 (SIMULATED)";
+        elSal.style.color = salOk === 1 ? "var(--emerald-primary)" : "var(--rose-primary)";
+      }
+      if (busSal) {
+        busSal.innerText = salOk === 1 ? "PC0 (Salinity Pot): 1 [ONLINE]" : "PC0 (Salinity Pot): 0 [SIMULATED]";
+        busSal.style.background = salOk === 1 ? "var(--emerald-surface)" : "var(--rose-surface)";
+        busSal.style.color = salOk === 1 ? "var(--emerald-text)" : "var(--rose-text)";
+        busSal.style.borderColor = salOk === 1 ? "var(--emerald-border)" : "var(--rose-border)";
+      }
+
+      // Hardware Sensor Link Bus Status Dot
+      const busDot = document.getElementById('busDot');
+      if (busDot) {
+        const allOk = (turbOk && depthOk && tempOk && salOk);
+        busDot.style.background = allOk ? "var(--emerald-primary)" : "var(--amber-primary)";
+      }
+    }
+
+    function updateSensorHealth(sensorOk) {
+      updateAllSensorHealth(sensorOk, 1, 1, 1);
+    }
+
+    function updateSNR(snr) {
+      liveSNR = snr;
+      valSNR.innerText = snr.toFixed(1);
+      const pct = Math.min(100, Math.max(10, (snr / 30) * 100));
+      meterSNR.style.width = pct + "%";
+
+      if (snr > 20) {
+        snrQuality.innerText = "OPTIMAL";
+        snrQuality.className = "kpi-badge badge-clear";
+        meterSNR.style.backgroundColor = "var(--emerald-primary)";
+      } else if (snr > 12) {
+        snrQuality.innerText = "BALANCED";
+        snrQuality.className = "kpi-badge badge-cloudy";
+        meterSNR.style.backgroundColor = "var(--amber-primary)";
+      } else {
+        snrQuality.innerText = "DEGRADED";
+        snrQuality.className = "kpi-badge badge-mud";
+        meterSNR.style.backgroundColor = "var(--rose-primary)";
+      }
+    }
+
+    function updateTemperature(tempC) {
+      liveTemp = tempC;
+      const elVal = document.getElementById('valTemperature');
+      const elMeter = document.getElementById('meterTemp');
+      const elCond = document.getElementById('tempCondition');
+      const elSpeed = document.getElementById('valSoundSpeed');
+
+      if (elVal) elVal.innerText = tempC.toFixed(1);
+      if (elMeter) {
+        const pct = Math.min(100, Math.max(5, (tempC / 50) * 100));
+        elMeter.style.width = pct + "%";
+      }
+
+      // Mackenzie Ocean Sound Speed Equation: c = 1449.2 + 4.6*T - 0.055*T^2 + 0.016*D + 1.34*(S - 35)
+      const c = 1449.2 + (4.6 * tempC) - (0.055 * tempC * tempC) + (0.016 * liveDepth) + (1.34 * (liveSal - 35.0));
+      if (elSpeed) elSpeed.innerText = `c ≈ ${Math.round(c)} m/s`;
+
+      if (elCond) {
+        if (tempC < 18) {
+          elCond.innerText = "COLD THERMOCLINE";
+          elCond.className = "kpi-badge badge-cloudy";
+        } else if (tempC <= 32) {
+          elCond.innerText = "NORMAL TROPICAL";
+          elCond.className = "kpi-badge badge-clear";
+        } else {
+          elCond.innerText = "WARM SURFACE";
+          elCond.className = "kpi-badge badge-mud";
+        }
+      }
+    }
+
+    function updateDepth(depthM) {
+      liveDepth = depthM;
+      const elLarge = document.getElementById('valDepthLarge');
+      const elMeter = document.getElementById('meterDepth');
+      const elCond = document.getElementById('depthCondition');
+      const elPressure = document.getElementById('valPressure');
+      const elSpeed = document.getElementById('valSoundSpeed');
+
+      if (elLarge) elLarge.innerText = depthM.toFixed(1);
+      if (valDepth) valDepth.innerText = `Depth: ${depthM.toFixed(1)} m`;
+      if (sliderDepthValDisplay) sliderDepthValDisplay.innerText = depthM.toFixed(1) + " m";
+      if (sliderDepth && Math.abs(parseFloat(sliderDepth.value) - depthM) > 1.0) {
+        sliderDepth.value = depthM;
+      }
+
+      if (elMeter) {
+        const pct = Math.min(100, Math.max(2, (depthM / 1000.0) * 100));
+        elMeter.style.width = pct + "%";
+      }
+
+      // Hydrostatic Pressure: P = 1 atm + (depth * 0.0981) bar
+      const pBar = 1.0 + (depthM * 0.0981);
+      if (elPressure) elPressure.innerText = `P: ${pBar.toFixed(1)} bar`;
+
+      // Update sound speed for new depth
+      const c = 1449.2 + (4.6 * liveTemp) - (0.055 * liveTemp * liveTemp) + (0.016 * depthM) + (1.34 * (liveSal - 35.0));
+      if (elSpeed) elSpeed.innerText = `c ≈ ${Math.round(c)} m/s`;
+
+      if (elCond) {
+        if (depthM < 200) {
+          elCond.innerText = "EPIPELAGIC (0-200m)";
+          elCond.className = "kpi-badge badge-clear";
+        } else if (depthM < 1000) {
+          elCond.innerText = "MESOPELAGIC (200-1000m)";
+          elCond.className = "kpi-badge badge-cloudy";
+        } else {
+          elCond.innerText = "BATHYPELAGIC (>1000m)";
+          elCond.className = "kpi-badge badge-mud";
+        }
+      }
+    }
+
+    function updateSalinity(salPSU) {
+      liveSal = salPSU;
+      const elVal = document.getElementById('valSalinity');
+      const elMeter = document.getElementById('meterSal');
+      const elCond = document.getElementById('salCondition');
+      const elDelta = document.getElementById('valSalDelta');
+      const elSpeed = document.getElementById('valSoundSpeed');
+
+      if (elVal) elVal.innerText = salPSU.toFixed(1);
+      if (sliderSalValDisplay) sliderSalValDisplay.innerText = salPSU.toFixed(1) + " PSU";
+      if (sliderSalinity && Math.abs(parseFloat(sliderSalinity.value) - salPSU) > 0.5) {
+        sliderSalinity.value = salPSU;
+      }
+      if (elMeter) {
+        const pct = Math.min(100, Math.max(2, (salPSU / 45) * 100));
+        elMeter.style.width = pct + "%";
+      }
+
+      const deltaC = 1.34 * (salPSU - 35.0);
+      if (elDelta) {
+        const sign = deltaC >= 0 ? "+" : "";
+        elDelta.innerText = `Δc: ${sign}${deltaC.toFixed(1)} m/s`;
+      }
+
+      // Mackenzie Ocean Sound Speed: c = 1449.2 + 4.6*T - 0.055*T^2 + 0.016*D + 1.34*(S - 35)
+      const c = 1449.2 + (4.6 * liveTemp) - (0.055 * liveTemp * liveTemp) + (0.016 * liveDepth) + deltaC;
+      if (elSpeed) elSpeed.innerText = `c ≈ ${Math.round(c)} m/s`;
+
+      if (elCond) {
+        if (salPSU < 10) {
+          elCond.innerText = "FRESH WATER";
+          elCond.className = "kpi-badge badge-cloudy";
+        } else if (salPSU <= 37) {
+          elCond.innerText = "NORMAL OCEANIC";
+          elCond.className = "kpi-badge badge-clear";
+        } else {
+          elCond.innerText = "HYPERSALINE";
+          elCond.className = "kpi-badge badge-mud";
+        }
+      }
+    }
+
+    function applyMode(modeIdx, skipSound = false) {
+      if (modeIdx < 0 || modeIdx > 2) return;
+      currentMode = modeIdx;
+      const p = PROFILES[modeIdx];
+
+      valSpeakerFreq.innerText = p.carrier_hz.toLocaleString();
+      valPitchTag.innerText = p.pitch_tag;
+      valPitchTag.className = "kpi-badge " + p.badge_class;
+      carrierEq.innerText = p.sonar_eq;
+
+      valModeTitle.innerText = p.name.replace(/MODE \d: /, "");
+      valModeBadge.innerText = "MODE " + modeIdx;
+      valModeBadge.className = "kpi-badge " + p.badge_class;
+      valModeSub.innerText = p.desc;
+
+      fftPeakText.innerText = `${p.carrier_label} (${p.sonar_eq})`;
+
+      // Update state nodes
+      nodeMode0.className = modeIdx === 0 ? "state-node active" : "state-node";
+      nodeMode1.className = modeIdx === 1 ? "state-node active" : "state-node";
+      nodeMode2.className = modeIdx === 2 ? "state-node active" : "state-node";
+
+      switchBannerMsg.innerText = `Autonomous Switch Complete: Operating in ${p.name} at ${p.carrier_label} (${p.pitch_tag})`;
+      
+      // Trigger oscilloscope pulse & synthesized sound if standalone simulation
+      if (typeof triggerScopePing === 'function') {
+        lastPingTimestamp = performance.now();
+        if (typeof flashScopeTrig === 'function') flashScopeTrig();
+        if (!skipSound && typeof playSynthPing === 'function') playSynthPing(modeIdx);
+      }
+    }
+
+    // Manual Sliders Override
+    sliderTurbidity.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      sliderValDisplay.innerText = val.toFixed(0) + " NTU";
+      updateTurbidity(val);
+
+      let target = currentMode;
+      if (currentMode === 0 && val >= 65) target = 1;
+      else if (currentMode === 1) {
+        if (val < 40) target = 0;
+        else if (val >= 165) target = 2;
+      } else if (currentMode === 2 && val < 140) target = 1;
+
+      if (target !== currentMode) {
+        applyMode(target);
+        logTerminal(`[SIMULATOR] Turbidity shifted to ${val} NTU → Switched to ${PROFILES[target].name}`, "switch");
+        sendSerialCmd(`${target}\n`);
+      }
+    });
+
+    // Depth Slider (0 to 100m) - dynamically moves seabed echo on oscilloscope!
+    sliderDepth.addEventListener('input', (e) => {
+      const depthVal = parseFloat(e.target.value);
+      sliderDepthValDisplay.innerText = depthVal.toFixed(1) + " m";
+      updateDepth(depthVal);
+    });
+
+    // Temperature Slider (5°C to 45°C) - dynamically recalculates sound speed (c) and François-Garrison attenuation!
+    sliderTemp.addEventListener('input', (e) => {
+      const tempVal = parseFloat(e.target.value);
+      sliderTempValDisplay.innerText = tempVal.toFixed(1) + " °C";
+      updateTemperature(tempVal);
+    });
+
+    // Salinity Slider (0 to 42 PSU) - dynamically recalculates sound speed (c) via Mackenzie equation!
+    sliderSalinity.addEventListener('input', (e) => {
+      const salVal = parseFloat(e.target.value);
+      sliderSalValDisplay.innerText = salVal.toFixed(1) + " PSU";
+      updateSalinity(salVal);
+    });
+
+    // Preset State Node Clicks
+    nodeMode0.addEventListener('click', () => {
+      sliderTurbidity.value = 12;
+      sliderValDisplay.innerText = "12 NTU";
+      updateTurbidity(12);
+      applyMode(0);
+      sendSerialCmd("0\n");
+      logTerminal("[MANUAL OVERRIDE] Set Mode 0: High Resolution (Clear Water)", "switch");
+    });
+
+    nodeMode1.addEventListener('click', () => {
+      sliderTurbidity.value = 85;
+      sliderValDisplay.innerText = "85 NTU";
+      updateTurbidity(85);
+      applyMode(1);
+      sendSerialCmd("1\n");
+      logTerminal("[MANUAL OVERRIDE] Set Mode 1: Balanced Coastal", "switch");
+    });
+
+    nodeMode2.addEventListener('click', () => {
+      sliderTurbidity.value = 240;
+      sliderValDisplay.innerText = "240 NTU";
+      updateTurbidity(240);
+      applyMode(2);
+      sendSerialCmd("2\n");
+      logTerminal("[MANUAL OVERRIDE] Set Mode 2: Deep Penetration (Mud Plume)", "switch");
+    });
+
+    // -------------------------------------------------------------
+    // Microphone Oscilloscope (Web Audio API Input)
+    // -------------------------------------------------------------
+    let audioCtx = null;
+    let analyser = null;
+    let isMicActive = false;
+
+    btnMic.addEventListener('click', async () => {
+      if (isMicActive) {
+        if (audioCtx) audioCtx.close();
+        isMicActive = false;
+        btnMic.classList.remove("active");
+        btnMicText.innerText = "Laptop Mic Scope";
+        document.getElementById('scopeSourceLabel').innerText = "SOURCE: STM32 DMA CHIRP (PA6)";
+        document.getElementById('scopeSourceLabel').style.color = "var(--emerald-primary)";
+        logTerminal("[MIC] Laptop microphone listening stopped.", "normal");
+        return;
+      }
+
+      try {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const source = audioCtx.createMediaStreamSource(stream);
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 1024;
+        source.connect(analyser);
+
+        isMicActive = true;
+        btnMic.classList.add("active");
+        btnMicText.innerText = "Stop Mic Scope";
+        document.getElementById('scopeSourceLabel').innerText = "SOURCE: LIVE LAPTOP ACOUSTIC MIC";
+        document.getElementById('scopeSourceLabel').style.color = "var(--amber-primary)";
+        logTerminal("[MIC] Laptop microphone now listening to speaker acoustic chirps!", "switch");
+      } catch (err) {
+        alert("Microphone access failed: " + err.message);
+      }
+    });
+
+    // -------------------------------------------------------------
+    // Autonomous Plume Mission Loop (Drives Physical 8-Ohm Speaker)
+    // -------------------------------------------------------------
+    let isMissionRunning = false;
+    let missionTimer = null;
+
+    btnAutoAdapt.addEventListener('click', () => {
+      if (isMissionRunning) {
+        isMissionRunning = false;
+        clearInterval(missionTimer);
+        btnAutoAdaptText.innerText = "Run Autonomous Plume Mission";
+        btnAutoAdapt.style.background = "var(--violet-primary)";
+        logTerminal("[MISSION] Mission stopped by user.", "alert");
+        sendSerialCmd("M\n"); // Toggle off on STM32
+        return;
+      }
+
+      isMissionRunning = true;
+      btnAutoAdaptText.innerText = "Stop Autonomous Mission";
+      btnAutoAdapt.style.background = "var(--rose-primary)";
+      logTerminal("[MISSION] AUTONOMOUS SEDIMENT PLUME MISSION INITIATED!", "switch");
+      logTerminal("[MISSION] Driving physical 8-Ohm speaker through STM32 USB!", "switch");
+
+      // Notify STM32 hardware over USB to begin autonomous mission on physical speaker
+      sendSerialCmd("M\n");
+
+      const trajectory = [
+        12, 14, 18, 25, 42, 60, 75, 95, 120, 150, 185, 220, 260, 275, 265, 230, 180, 140, 95, 60, 35, 18, 12
+      ];
+      let step = 0;
+
+      missionTimer = setInterval(() => {
+        if (!isMissionRunning) return;
+        const turb = trajectory[step];
+        sliderTurbidity.value = turb;
+        sliderValDisplay.innerText = turb + " NTU";
+        updateTurbidity(turb);
+
+        let target = currentMode;
+        if (currentMode === 0 && turb >= 65) target = 1;
+        else if (currentMode === 1) {
+          if (turb < 40) target = 0;
+          else if (turb >= 165) target = 2;
+        } else if (currentMode === 2 && turb < 140) target = 1;
+
+        if (target !== currentMode) {
+          applyMode(target);
+          logTerminal(`[AUTONOMOUS MISSION] Mud Plume Turbidity ${turb} NTU → Mode switched to ${PROFILES[target].name}`, "switch");
+          // Send mode update to physical STM32 board over USB:
+          sendSerialCmd(`${target}\n`);
+        }
+
+        // Laptop audio completely disabled - only physical 8-Ohm speaker on STM32 is used!
+        step++;
+        if (step >= trajectory.length) step = 0;
+      }, 900);
+    });
+
+    // Web Audio API Acoustic Synthesizer (Disabled: ONLY physical 8-Ohm desk speaker on STM32 PA6 is used!)
+    let synthAudioCtx = null;
+    let isLaptopAudioEnabled = false;
+
+    function playSynthPing(modeIdx) {
+      if (!isLaptopAudioEnabled) return;
+
+      try {
+        if (!synthAudioCtx) {
+          synthAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (synthAudioCtx.state === 'suspended') {
+          synthAudioCtx.resume();
+        }
+
+        const now = synthAudioCtx.currentTime;
+        const osc = synthAudioCtx.createOscillator();
+        const gain = synthAudioCtx.createGain();
+
+        // Exact match with STM32 firmware chirp profiles:
+        let fStart = 2800, fEnd = 4200, duration = 0.15;
+        if (modeIdx === 1) {
+          fStart = 1200; fEnd = 1800; duration = 0.18;
+        } else if (modeIdx === 2) {
+          fStart = 400; fEnd = 700; duration = 0.25;
+        }
+
+        // Linear Frequency Modulated (LFM) sweep
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(fStart, now);
+        osc.frequency.linearRampToValueAtTime(fEnd, now + duration);
+
+        // Smooth cosine/taper window envelope (loud & clear)
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.35, now + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+        osc.connect(gain);
+        gain.connect(synthAudioCtx.destination);
+
+        osc.start(now);
+        osc.stop(now + duration + 0.05);
+      } catch (err) {
+        console.warn("Web Audio ping failed:", err);
+      }
+    }
+
+    // -------------------------------------------------------------
+    // Terminal Helper
+    // -------------------------------------------------------------
+    function logTerminal(msg, type = "normal") {
+      const el = document.createElement("div");
+      el.className = `terminal-line ${type}`;
+      el.innerText = msg;
+      terminalLog.appendChild(el);
+      terminalLog.scrollTop = terminalLog.scrollHeight;
+    }
+
+    function clearTerminal() {
+      terminalLog.innerHTML = "";
+    }
+
+    // =============================================================
+    // DIGITAL OSCILLOSCOPE & FFT ENGINE (ACTIVE TRIGGERED DSO)
+    // =============================================================
+    const scopeCanvas = document.getElementById('scopeCanvas');
+    const scopeCtx = scopeCanvas.getContext('2d');
+
+    const fftCanvas = document.getElementById('fftCanvas');
+    const fftCtx = fftCanvas.getContext('2d');
+
+    const chartCanvas = document.getElementById('chartCanvas');
+    const chartCtx = chartCanvas.getContext('2d');
+
+    // UI Elements
+    const tabScopeChirp = document.getElementById('tabScopeChirp');
+    const tabScopeCarrier = document.getElementById('tabScopeCarrier');
+    const tabScopeMic = document.getElementById('tabScopeMic');
+    const scopeTrigLed = document.getElementById('scopeTrigLed');
+    const scopeTrigStatus = document.getElementById('scopeTrigStatus');
+    const scopeChLabel = document.getElementById('scopeChLabel');
+    const scopeVppVal = document.getElementById('scopeVppVal');
+    const scopeFreqVal = document.getElementById('scopeFreqVal');
+    const tbValue = document.getElementById('tbValue');
+    const btnSinglePing = document.getElementById('btnSinglePing');
+    const tbButtons = document.querySelectorAll('.tb-btn[data-tb]');
+
+    // Oscilloscope State Machine
+    let scopeDisplayMode = 'chirp'; // 'chirp' | 'carrier' | 'mic'
+    let scopeTimebase = 50; // us/div or ms/div
+    let lastPingTimestamp = performance.now();
+    let trigFlashTimer = null;
+    let phase = 0;
+
+    // Trigger an immediate acoustic ping packet on the oscilloscope & laptop speaker (if standalone)
+    function triggerScopePing() {
+      lastPingTimestamp = performance.now();
+      flashScopeTrig();
+      playSynthPing(currentMode);
+    }
+
+    function flashScopeTrig() {
+      if (!scopeTrigLed) return;
+      scopeTrigLed.classList.add('flash');
+      scopeTrigStatus.style.color = 'var(--emerald-primary)';
+      scopeTrigStatus.innerText = "TRIG'D [CAPT]";
+      clearTimeout(trigFlashTimer);
+      trigFlashTimer = setTimeout(() => {
+        scopeTrigLed.classList.remove('flash');
+        scopeTrigStatus.innerText = "TRIG'D [AUTO]";
+      }, 250);
+    }
+
+    // Timebase Buttons Listener
+    tbButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tbButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        scopeTimebase = parseInt(btn.dataset.tb, 10);
+        if (scopeDisplayMode === 'chirp') {
+          tbValue.innerText = `${scopeTimebase} ms/div`;
+        } else {
+          tbValue.innerText = `${scopeTimebase} µs/div`;
+        }
+      });
+    });
+
+    // Scope Mode Tab Handlers
+    tabScopeChirp.addEventListener('click', () => {
+      scopeDisplayMode = 'chirp';
+      tabScopeChirp.classList.add('active');
+      tabScopeCarrier.classList.remove('active');
+      tabScopeMic.classList.remove('active');
+      scopeChLabel.innerText = "LFM CHIRP (PA6)";
+      tbValue.innerText = `${scopeTimebase} ms/div`;
+      document.getElementById('scopeSourceLabel').innerText = "SOURCE: STM32 DMA CHIRP (PA6)";
+      document.getElementById('scopeSourceLabel').style.color = "var(--emerald-primary)";
+      triggerScopePing();
+    });
+
+    tabScopeCarrier.addEventListener('click', () => {
+      scopeDisplayMode = 'carrier';
+      tabScopeCarrier.classList.add('active');
+      tabScopeChirp.classList.remove('active');
+      tabScopeMic.classList.remove('active');
+      scopeChLabel.innerText = "PWM CARRIER (PA6)";
+      tbValue.innerText = `${scopeTimebase} µs/div`;
+      document.getElementById('scopeSourceLabel').innerText = "SOURCE: TIM3_CH1 CARRIER (PA6)";
+      document.getElementById('scopeSourceLabel').style.color = "var(--violet-primary)";
+      flashScopeTrig();
+    });
+
+    tabScopeMic.addEventListener('click', async () => {
+      scopeDisplayMode = 'mic';
+      tabScopeMic.classList.add('active');
+      tabScopeChirp.classList.remove('active');
+      tabScopeCarrier.classList.remove('active');
+      scopeChLabel.innerText = "LAPTOP MIC (LIVE AC)";
+      tbValue.innerText = "10 ms/div";
+      document.getElementById('scopeSourceLabel').innerText = "SOURCE: LIVE LAPTOP ACOUSTIC MIC";
+      document.getElementById('scopeSourceLabel').style.color = "var(--amber-primary)";
+
+      if (!isMicActive) {
+        btnMic.click();
+      }
+    });
+
+    btnSinglePing.addEventListener('click', () => {
+      triggerScopePing();
+      logTerminal(`[MANUAL TRIGGER] Fired acoustic ping pulse @ ${PROFILES[currentMode].carrier_label}`, "normal");
+    });
+
+    function renderScope() {
+      requestAnimationFrame(renderScope);
+
+      const w = scopeCanvas.width;
+      const h = scopeCanvas.height;
+      const now = performance.now();
+
+      // Clear with clean scope background
+      scopeCtx.fillStyle = "#FAFCFF";
+      scopeCtx.fillRect(0, 0, w, h);
+
+      // 1. Subtle DSO Grid Lines (40px divisions)
+      scopeCtx.strokeStyle = "rgba(203, 213, 225, 0.4)";
+      scopeCtx.lineWidth = 1;
+      scopeCtx.beginPath();
+      for (let x = 0; x < w; x += 40) {
+        scopeCtx.moveTo(x, 0); scopeCtx.lineTo(x, h);
+      }
+      for (let y = 0; y < h; y += 40) {
+        scopeCtx.moveTo(0, y); scopeCtx.lineTo(w, y);
+      }
+      scopeCtx.stroke();
+
+      // Center zero-crossing dashed baseline
+      scopeCtx.strokeStyle = "rgba(148, 163, 184, 0.35)";
+      scopeCtx.setLineDash([4, 4]);
+      scopeCtx.beginPath();
+      scopeCtx.moveTo(0, h / 2); scopeCtx.lineTo(w, h / 2);
+      scopeCtx.stroke();
+      scopeCtx.setLineDash([]);
+
+      // Trigger Level Line (Dashed Gold with T indicator)
+      const trigY = h / 2 - 35; // Trigger level at ~ +0.5V
+      scopeCtx.strokeStyle = "rgba(217, 119, 6, 0.4)";
+      scopeCtx.setLineDash([3, 5]);
+      scopeCtx.beginPath();
+      scopeCtx.moveTo(0, trigY); scopeCtx.lineTo(w, trigY);
+      scopeCtx.stroke();
+      scopeCtx.setLineDash([]);
+
+      // Trigger marker 'T ▶'
+      scopeCtx.fillStyle = "#D97706";
+      scopeCtx.font = "700 10px var(--font-mono)";
+      scopeCtx.fillText("T ▶", 6, trigY - 3);
+
+      const currentFreq = PROFILES[currentMode].carrier_hz;
+
+      // Ocean Acoustic Environmental Parameters
+      const currentDepth = (typeof liveDepth === 'number') ? liveDepth : 15.0;
+      const currentTemp = (typeof liveTemp === 'number') ? liveTemp : 24.5;
+      const currentSal = (typeof liveSal === 'number') ? liveSal : 35.0;
+      const currentTurb = (typeof liveTurbidity === 'number') ? liveTurbidity : 12.0;
+
+      // Mackenzie Sound Speed: c = 1449.2 + 4.6*T - 0.055*T^2 + 0.016*D + 1.34*(S - 35) (m/s)
+      const c = 1449.2 + (4.6 * currentTemp) - (0.055 * currentTemp * currentTemp) + (0.016 * currentDepth) + (1.34 * (currentSal - 35.0));
+
+      // Two-Way Time of Flight (ToF) in milliseconds: ToF = (2 * D / c) * 1000
+      const tofMs = (2.0 * currentDepth / c) * 1000.0;
+
+      // Acoustic Wavelength in Water: lambda = c / f (cm)
+      const wavelengthCm = (c / currentFreq) * 100.0;
+
+      // Hydrostatic Pressure at Depth (bar)
+      const pBar = 1.0 + (currentDepth * 0.0981);
+
+      // Sound Absorption Alpha (dB/km)
+      const fKhz = currentFreq / 1000.0;
+      const alphaDbKm = 0.05 + 0.003 * Math.pow(fKhz, 2) + 0.0018 * currentTemp + (currentTurb / 150.0);
+
+      // Dynamic Real-Time SNR (dB)
+      const estSNR = Math.max(4.0, 32.0 - (currentTurb / 12.0) - (currentDepth / 60.0));
+
+      // -------------------------------------------------------------
+      // MODE 1: LFM CHIRP BURST & SEABED ECHO (DYNAMIC DSO SIMULATION)
+      // -------------------------------------------------------------
+      if (scopeDisplayMode === 'chirp') {
+        const pingPeriodMs = 2000;
+        const pingElapsed = (now - lastPingTimestamp) % pingPeriodMs;
+        const pingFrac = pingElapsed / pingPeriodMs;
+
+        // Phosphor sweep beam position
+        const scanX = pingFrac * w;
+
+        // Flash trigger LED as beam crosses start of chirp packet (x ~ 0.04w)
+        if (Math.abs(scanX - (0.04 * w)) < 18) {
+          flashScopeTrig();
+        }
+
+        // -------------------------------------------------------------
+        // ACOUSTIC TIMING & HORIZONTAL GEOMETRY
+        // -------------------------------------------------------------
+        // 1. Transmit Chirp Duration:
+        //    Mode 0 (3.5 kHz): 150ms -> width 0.16w
+        //    Mode 1 (1.8 kHz): 190ms -> width 0.20w
+        //    Mode 2 (600 Hz):  240ms -> width 0.24w (Longer deep penetration pulse!)
+        const txStart = 0.04;
+        const txEnd = (currentMode === 2) ? 0.28 : (currentMode === 1 ? 0.24 : 0.20);
+
+        // 2. Seabed Echo Arrival:
+        //    Directly maps depth (0m to 1000m) across the full canvas!
+        //    Sound speed c modulates arrival: colder water delays echo (shifts right), warmer water arrives faster (shifts left)!
+        const soundSpeedFactor = 1500.0 / c;
+        const rxStart = Math.min(0.86, Math.max(txEnd + 0.03, txEnd + 0.03 + (currentDepth / 1000.0) * 0.56 * soundSpeedFactor));
+        
+        // 3. Pulse Dispersion:
+        //    Turbid water broadens the echo pulse width due to multi-path sediment scattering!
+        const rxWidth = 0.11 + (currentTurb / 300.0) * 0.08;
+        const rxEnd = Math.min(0.98, rxStart + rxWidth);
+
+        // 4. Amplitude & Attenuation Physics:
+        //    - Geometric Spreading Loss: deeper water attenuates echo
+        const depthSpreadLoss = Math.max(0.25, 1.0 - (currentDepth / 1200.0) * 0.70);
+        //    - Particulate Scattering Loss: turbid water squashes echo peak!
+        //      Clear water (10 NTU) = 0.88 tall peak; Mud plume (250 NTU) = 0.15 tiny peak
+        const turbScatteringLoss = Math.max(0.14, 0.88 - (currentTurb / 300.0) * 0.74);
+        const echoAmpFactor = depthSpreadLoss * turbScatteringLoss;
+
+        // 5. Sediment Backscatter Clutter:
+        //    High turbidity fills the entire water column between TX and RX with reverberation ripples!
+        const turbClutterGain = (currentTurb / 300.0) * 12.0;
+
+        // 6. Traveling Wave Phase & Frequency Modulation:
+        //    Wavelength lambda stretches in warmer water (higher c) -> wider wave cycles!
+        const waveScale = (1500.0 / c);
+        const waveTimePhase = (now * 0.015);
+
+        const points = [];
+        for (let x = 0; x < w; x++) {
+          const t = x / w;
+          let y = h / 2;
+
+          if (t >= txStart && t <= txEnd) {
+            // TRANSMIT LFM CHIRP BURST (Hann window envelope)
+            const tau = (t - txStart) / (txEnd - txStart);
+            const env = Math.sin(Math.PI * tau) * Math.sin(Math.PI * tau);
+            // Linear frequency chirp modulated by operating frequency & sound speed
+            const cyclesCount = (currentMode === 2) ? 5.5 : (currentMode === 1 ? 11.0 : 18.0);
+            const chirpPhase = (2 * Math.PI * (cyclesCount * tau + 0.4 * cyclesCount * tau * tau) * waveScale) + waveTimePhase;
+            const traceNoise = (Math.sin(now * 0.02 + x * 0.3) * 1.0 + (Math.random() - 0.5) * 1.6);
+            y = (h / 2) + Math.sin(chirpPhase) * (h * 0.40) * env + traceNoise;
+
+          } else if (t >= rxStart && t <= rxEnd) {
+            // SEABED / TARGET ECHO (Attenuated by Depth Spreading & Turbidity Scattering)
+            const tau = (t - rxStart) / (rxEnd - rxStart);
+            const env = Math.sin(Math.PI * tau) * Math.sin(Math.PI * tau);
+            const cyclesCount = (currentMode === 2) ? 4.5 : (currentMode === 1 ? 9.5 : 16.0);
+            const chirpPhase = (2 * Math.PI * (cyclesCount * tau + 0.3 * cyclesCount * tau * tau) * waveScale) + waveTimePhase + 2.8;
+            const turbNoise = (Math.random() - 0.5) * (1.5 + (currentTurb / 50.0));
+            y = (h / 2) + Math.sin(chirpPhase) * (h * 0.38) * env * echoAmpFactor + turbNoise;
+
+          } else {
+            // WATER COLUMN TRANSIT REGION
+            // In clear water: quiet baseline (~1.5px)
+            // In turbid mud plume: active sediment volume backscattering ripples (~12px)!
+            const baseNoise = (Math.sin(x * 0.25 + now * 0.008) * 1.0 + Math.cos(x * 0.1 - now * 0.012) * 0.7 + (Math.random() - 0.5) * 1.8);
+            const sedimentClutter = (Math.sin(x * 0.45 + now * 0.02) * 1.4 + Math.cos(x * 0.85 - now * 0.015) * 1.2) * turbClutterGain;
+            y = (h / 2) + baseNoise + sedimentClutter;
+          }
+
+          points.push({ x, y });
+        }
+
+        // 1. Shaded Gradient Fill Under Waveform
+        const grad = scopeCtx.createLinearGradient(0, h / 2 - 140, 0, h / 2 + 140);
+        grad.addColorStop(0, (currentMode === 2) ? "rgba(225, 29, 72, 0.16)" : ((currentMode === 1) ? "rgba(217, 119, 6, 0.16)" : "rgba(79, 70, 229, 0.16)"));
+        grad.addColorStop(1, "rgba(79, 70, 229, 0.0)");
+
+        scopeCtx.beginPath();
+        scopeCtx.moveTo(0, h / 2);
+        for (let pt of points) {
+          scopeCtx.lineTo(pt.x, pt.y);
+        }
+        scopeCtx.lineTo(w, h / 2);
+        scopeCtx.fillStyle = grad;
+        scopeCtx.fill();
+
+        // 2. Dynamic Waveform Trace Stroke
+        scopeCtx.lineWidth = 2.2;
+        scopeCtx.strokeStyle = (currentMode === 2) ? "#E11D48" : (currentMode === 1 ? "#D97706" : "#4F46E5");
+        scopeCtx.beginPath();
+        for (let i = 0; i < points.length; i++) {
+          if (i === 0) scopeCtx.moveTo(points[i].x, points[i].y);
+          else scopeCtx.lineTo(points[i].x, points[i].y);
+        }
+        scopeCtx.stroke();
+
+        // 3. Phosphor Sweep Beam
+        const beamGrad = scopeCtx.createLinearGradient(scanX - 35, 0, scanX + 2, 0);
+        beamGrad.addColorStop(0, "rgba(79, 70, 229, 0.0)");
+        beamGrad.addColorStop(0.7, "rgba(79, 70, 229, 0.18)");
+        beamGrad.addColorStop(1, "rgba(99, 102, 241, 0.85)");
+
+        scopeCtx.fillStyle = beamGrad;
+        scopeCtx.fillRect(Math.max(0, scanX - 35), 0, 37, h);
+
+        scopeCtx.strokeStyle = "rgba(79, 70, 229, 0.9)";
+        scopeCtx.lineWidth = 1.8;
+        scopeCtx.beginPath();
+        scopeCtx.moveTo(scanX, 0);
+        scopeCtx.lineTo(scanX, h);
+        scopeCtx.stroke();
+
+        // 4. TOP HUD TELEMETRY BANNER (Agilent DSO Style)
+        scopeCtx.fillStyle = "rgba(248, 250, 252, 0.95)";
+        scopeCtx.fillRect(0, 0, w, 28);
+        scopeCtx.strokeStyle = "rgba(203, 213, 225, 0.85)";
+        scopeCtx.strokeRect(0, 0, w, 28);
+
+        scopeCtx.font = "700 11px var(--font-mono)";
+        scopeCtx.fillStyle = "#1E293B";
+        scopeCtx.fillText(`DEPTH: ${currentDepth.toFixed(1)}m (ToF: ${tofMs.toFixed(1)}ms | P: ${pBar.toFixed(1)}bar)`, 12, 18);
+        
+        scopeCtx.fillStyle = "#0284C7";
+        scopeCtx.fillText(`TEMP: ${currentTemp.toFixed(1)}°C | SAL: ${currentSal.toFixed(1)}PSU (c: ${Math.round(c)}m/s)`, w * 0.35, 18);
+
+        scopeCtx.fillStyle = (currentTurb > 165) ? "#DC2626" : ((currentTurb > 65) ? "#D97706" : "#059669");
+        scopeCtx.fillText(`TURB: ${currentTurb.toFixed(0)}NTU (SNR: ${estSNR.toFixed(1)}dB | α: ${alphaDbKm.toFixed(1)}dB/km)`, w * 0.72, 18);
+
+        // 5. WAVEFORM ANNOTATIONS (TX and RX Markers with Arrows)
+        // TX Ping Callout
+        scopeCtx.fillStyle = "#4F46E5";
+        scopeCtx.font = "700 11px var(--font-mono)";
+        const pulseLen = (currentMode === 2) ? "240 ms" : (currentMode === 1 ? "190 ms" : "150 ms");
+        scopeCtx.fillText(`▲ TX PING (${PROFILES[currentMode].carrier_label} | ${pulseLen})`, txStart * w + 4, h / 2 - 105);
+
+        // Seabed Echo Callout
+        scopeCtx.fillStyle = (echoAmpFactor < 0.25) ? "#D97706" : "#059669";
+        const echoPercent = Math.round(echoAmpFactor * 100);
+        scopeCtx.fillText(`▲ SEABED ECHO (${currentDepth.toFixed(1)}m @ ${Math.round(c)}m/s | ${echoPercent}% Amp)`, rxStart * w + 4, h / 2 - 75);
+
+        // Clutter Label in Transit Zone if turbid
+        if (currentTurb >= 45 && (rxStart - txEnd) > 0.18) {
+          const midTransitX = ((txEnd + rxStart) / 2.0) * w - 100;
+          scopeCtx.fillStyle = "rgba(220, 38, 38, 0.7)";
+          scopeCtx.font = "600 10px var(--font-mono)";
+          scopeCtx.fillText(`░░ SEDIMENT BACKSCATTER (${currentTurb.toFixed(0)} NTU) ░░`, Math.max(txEnd * w + 10, midTransitX), h / 2 + 55);
+        }
+
+        // Live HUD Metrics (right header values)
+        const peakVpp = (3.30 * (1.0 - (currentTurb / 600.0))).toFixed(2);
+        scopeVppVal.innerText = `${peakVpp} V`;
+        scopeFreqVal.innerText = `${PROFILES[currentMode].carrier_label} [${Math.round(c)} m/s]`;
+      }
+
+      // -------------------------------------------------------------
+      // MODE 2: CONTINUOUS PWM CARRIER WAVE (PA6 TIM3 DMA OUTPUT)
+      // -------------------------------------------------------------
+      else if (scopeDisplayMode === 'carrier') {
+        const timebaseScale = scopeTimebase / 50.0;
+        // Wavelength lambda = c / currentFreq
+        const cycles = (currentFreq / 250) * timebaseScale * (1500.0 / c);
+        const scanX = ((now % 300) / 300.0) * w;
+
+        // Waveform with edge trigger
+        const grad = scopeCtx.createLinearGradient(0, h / 2 - 130, 0, h / 2 + 130);
+        grad.addColorStop(0, (currentMode === 2) ? "rgba(225, 29, 72, 0.12)" : ((currentMode === 1) ? "rgba(217, 119, 6, 0.12)" : "rgba(79, 70, 229, 0.12)"));
+        grad.addColorStop(1, "rgba(79, 70, 229, 0.0)");
+
+        // Turbidity attenuates carrier amplitude and increases trace noise
+        const carrierAmp = (h * 0.38) * Math.max(0.25, 1.0 - (currentTurb / 450.0));
+        const turbNoise = (currentTurb / 300.0) * 4.5;
+
+        scopeCtx.beginPath();
+        scopeCtx.moveTo(0, h / 2);
+        for (let x = 0; x < w; x++) {
+          const t = x / w;
+          const jitter = (Math.sin(now * 0.008 + x * 0.1) * 0.8 + (Math.random() - 0.5) * turbNoise);
+          const y = h / 2 + Math.sin(2 * Math.PI * cycles * t + phase) * carrierAmp + jitter;
+          scopeCtx.lineTo(x, y);
+        }
+        scopeCtx.lineTo(w, h / 2);
+        scopeCtx.fillStyle = grad;
+        scopeCtx.fill();
+
+        // Stroke
+        scopeCtx.lineWidth = 2.4;
+        scopeCtx.strokeStyle = (currentMode === 2) ? "#E11D48" : (currentMode === 1 ? "#D97706" : "#4F46E5");
+        scopeCtx.beginPath();
+        for (let x = 0; x < w; x++) {
+          const t = x / w;
+          const jitter = (Math.sin(now * 0.008 + x * 0.1) * 0.8 + (Math.random() - 0.5) * turbNoise);
+          const y = h / 2 + Math.sin(2 * Math.PI * cycles * t + phase) * carrierAmp + jitter;
+          if (x === 0) scopeCtx.moveTo(x, y);
+          else scopeCtx.lineTo(x, y);
+        }
+        scopeCtx.stroke();
+
+        // Phosphor sweep line
+        scopeCtx.strokeStyle = "rgba(79, 70, 229, 0.6)";
+        scopeCtx.lineWidth = 1.2;
+        scopeCtx.beginPath();
+        scopeCtx.moveTo(scanX, 0);
+        scopeCtx.lineTo(scanX, h);
+        scopeCtx.stroke();
+
+        // TOP HUD BAR
+        scopeCtx.fillStyle = "rgba(248, 250, 252, 0.95)";
+        scopeCtx.fillRect(0, 0, w, 28);
+        scopeCtx.strokeStyle = "rgba(203, 213, 225, 0.85)";
+        scopeCtx.strokeRect(0, 0, w, 28);
+
+        scopeCtx.font = "700 11px var(--font-mono)";
+        scopeCtx.fillStyle = "#1E293B";
+        scopeCtx.fillText(`FREQ: ${currentFreq} Hz  |  PERIOD: ${(1000/currentFreq).toFixed(2)} ms`, 12, 18);
+        
+        scopeCtx.fillStyle = "#0284C7";
+        scopeCtx.fillText(`c: ${Math.round(c)} m/s (T: ${currentTemp.toFixed(1)}°C)  |  λ: ${wavelengthCm.toFixed(1)} cm`, w * 0.38, 18);
+
+        scopeCtx.fillStyle = (currentTurb > 165) ? "#DC2626" : ((currentTurb > 65) ? "#D97706" : "#059669");
+        scopeCtx.fillText(`TURB ATTEN: ${alphaDbKm.toFixed(2)} dB/km  |  Amp: ${Math.round(carrierAmp / (h * 0.38) * 100)}%`, w * 0.71, 18);
+
+        phase += (currentFreq / 12000.0);
+        scopeVppVal.innerText = (carrierAmp / (h * 0.38) * 3.3).toFixed(2) + " V";
+        scopeFreqVal.innerText = `${PROFILES[currentMode].carrier_label} [λ=${wavelengthCm.toFixed(1)}cm]`;
+      }
+
+      // -------------------------------------------------------------
+      // MODE 3: LIVE LAPTOP ACOUSTIC MICROPHONE INPUT (AUTO-GAIN & TRIGGER)
+      // -------------------------------------------------------------
+      else if (scopeDisplayMode === 'mic') {
+        if (isMicActive && analyser) {
+          const bufferLength = analyser.frequencyBinCount;
+          const dataArray = new Uint8Array(bufferLength);
+          analyser.getByteTimeDomainData(dataArray);
+
+          // Find positive-going zero crossing for edge trigger stabilization
+          let trigOffset = 0;
+          for (let i = 1; i < bufferLength - 1; i++) {
+            if (dataArray[i - 1] < 128 && dataArray[i] >= 128) {
+              trigOffset = i;
+              break;
+            }
+          }
+
+          // Auto-gain with 8.5x magnification so room sound and speech jump vividly
+          const gain = 8.5;
+          const points = [];
+          const usableLen = Math.min(bufferLength - trigOffset, 512);
+          const sliceWidth = w / usableLen;
+
+          let maxDev = 0;
+          for (let i = 0; i < usableLen; i++) {
+            const rawVal = dataArray[trigOffset + i];
+            const dev = (rawVal - 128) / 128.0;
+            if (Math.abs(dev) > maxDev) maxDev = Math.abs(dev);
+            const clampedDev = Math.max(-1.0, Math.min(1.0, dev * gain));
+            const y = (h / 2) - clampedDev * (h * 0.42);
+            points.push({ x: i * sliceWidth, y });
+          }
+
+          if (maxDev > 0.04) flashScopeTrig();
+
+          // Amber gradient fill
+          const grad = scopeCtx.createLinearGradient(0, h / 2 - 120, 0, h / 2 + 120);
+          grad.addColorStop(0, "rgba(217, 119, 6, 0.12)");
+          grad.addColorStop(1, "rgba(217, 119, 6, 0.0)");
+
+          scopeCtx.beginPath();
+          scopeCtx.moveTo(0, h / 2);
+          for (let pt of points) scopeCtx.lineTo(pt.x, pt.y);
+          scopeCtx.lineTo(w, h / 2);
+          scopeCtx.fillStyle = grad;
+          scopeCtx.fill();
+
+          // Stroke
+          scopeCtx.lineWidth = 2.4;
+          scopeCtx.strokeStyle = "#D97706";
+          scopeCtx.beginPath();
+          for (let i = 0; i < points.length; i++) {
+            if (i === 0) scopeCtx.moveTo(points[i].x, points[i].y);
+            else scopeCtx.lineTo(points[i].x, points[i].y);
+          }
+          scopeCtx.stroke();
+
+          // Update HUD
+          const vppEst = Math.min(3.3, maxDev * gain * 3.3).toFixed(2);
+          scopeVppVal.innerText = `${vppEst} V`;
+          scopeFreqVal.innerText = maxDev > 0.05 ? "ACOUSTIC DETECTED" : "AMBIENT SILENCE";
+        } else {
+          scopeCtx.fillStyle = "rgba(100, 116, 139, 0.6)";
+          scopeCtx.font = "600 14px var(--font-sans)";
+          scopeCtx.textAlign = "center";
+          scopeCtx.fillText("Click [🎤 Mic Scope] to start acoustic microphone listening", w / 2, h / 2);
+          scopeCtx.textAlign = "left";
+        }
+      }
+
+      renderFFT();
+      renderRollingHistory();
+    }
+
+    function renderFFT() {
+      const w = fftCanvas.width;
+      const h = fftCanvas.height;
+
+      fftCtx.fillStyle = "#FAFCFF";
+      fftCtx.fillRect(0, 0, w, h);
+
+      // Subtle horizontal dB lines
+      fftCtx.strokeStyle = "rgba(226, 232, 240, 0.8)";
+      fftCtx.lineWidth = 1;
+      fftCtx.beginPath();
+      for (let y = 30; y < h; y += 35) {
+        fftCtx.moveTo(0, y); fftCtx.lineTo(w, y);
+      }
+      fftCtx.stroke();
+
+      if (isMicActive && analyser) {
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+        analyser.getByteFrequencyData(dataArray);
+
+        const barWidth = (w / bufferLength) * 2.2;
+        let x = 0;
+
+        for (let i = 0; i < bufferLength; i++) {
+          const barHeight = (dataArray[i] / 255) * (h - 20);
+          fftCtx.fillStyle = "#D97706";
+          fftCtx.fillRect(x, h - barHeight, barWidth, barHeight);
+          x += barWidth + 1;
+        }
+      } else {
+        // Synthesize FFT envelope dynamically reacting to Mode and Turbidity
+        const numBars = 64;
+        const barWidth = (w / numBars) - 2;
+        const peakIndex = currentMode === 0 ? 46 : (currentMode === 1 ? 26 : 10);
+        const currentTurb = (typeof liveTurbidity === 'number') ? liveTurbidity : 12.0;
+
+        // In clear water, spectral peak is tall and razor sharp (width ~2.2)
+        // In muddy water, spectral peak is attenuated and widened (width ~5.0), and noise floor rises!
+        const peakSpread = 2.2 + (currentTurb / 300.0) * 3.5;
+        const peakAtten = Math.max(0.35, 1.0 - (currentTurb / 400.0));
+        const noiseFloor = 3 + (currentTurb / 300.0) * 12;
+
+        for (let i = 0; i < numBars; i++) {
+          const dist = Math.abs(i - peakIndex);
+          const heightNorm = Math.exp(-0.5 * Math.pow(dist / peakSpread, 2));
+          const barHeight = Math.max(noiseFloor, heightNorm * (h - 25) * peakAtten + Math.random() * (noiseFloor + 2));
+
+          const x = i * (barWidth + 2);
+          fftCtx.fillStyle = (dist < 3) ? ((currentMode === 2) ? "#E11D48" : (currentMode === 1 ? "#D97706" : "#4F46E5")) : "#CBD5E1";
+          fftCtx.fillRect(x, h - barHeight, barWidth, barHeight);
+        }
+      }
+    }
+
+    function renderRollingHistory() {
+      const w = chartCanvas.width;
+      const h = chartCanvas.height;
+
+      chartCtx.fillStyle = "#FFFFFF";
+      chartCtx.fillRect(0, 0, w, h);
+
+      // Subtle gridlines
+      chartCtx.strokeStyle = "rgba(226, 232, 240, 0.7)";
+      chartCtx.lineWidth = 1;
+      chartCtx.beginPath();
+      for (let y = 30; y < h; y += 35) {
+        chartCtx.moveTo(0, y); chartCtx.lineTo(w, y);
+      }
+      for (let x = 60; x < w; x += 80) {
+        chartCtx.moveTo(x, 0); chartCtx.lineTo(x, h);
+      }
+      chartCtx.stroke();
+
+      if (historyData.length < 2) return;
+
+      const stepX = w / (MAX_HISTORY - 1);
+
+      // 1. Draw Turbidity Line (Emerald)
+      chartCtx.strokeStyle = "#059669";
+      chartCtx.lineWidth = 2.2;
+      chartCtx.beginPath();
+      for (let i = 0; i < historyData.length; i++) {
+        const x = i * stepX;
+        const turbNorm = Math.min(1, Math.max(0, historyData[i].turb / 300.0));
+        const y = h - 20 - turbNorm * (h - 40);
+        if (i === 0) chartCtx.moveTo(x, y);
+        else chartCtx.lineTo(x, y);
+      }
+      chartCtx.stroke();
+
+      // 2. Draw Frequency Line (Royal Violet)
+      chartCtx.strokeStyle = "#4F46E5";
+      chartCtx.lineWidth = 2.2;
+      chartCtx.beginPath();
+      for (let i = 0; i < historyData.length; i++) {
+        const x = i * stepX;
+        const freqNorm = Math.min(1, Math.max(0, (historyData[i].freq - 400) / 3600.0));
+        const y = h - 20 - freqNorm * (h - 40);
+        if (i === 0) chartCtx.moveTo(x, y);
+        else chartCtx.lineTo(x, y);
+      }
+      chartCtx.stroke();
+
+      // Current Value Marker Callouts at end of chart
+      const lastIdx = historyData.length - 1;
+      const lastX = lastIdx * stepX;
+      const lastTurb = historyData[lastIdx].turb;
+      const lastFreq = historyData[lastIdx].freq;
+
+      const lastTurbY = h - 20 - Math.min(1, Math.max(0, lastTurb / 300.0)) * (h - 40);
+      const lastFreqY = h - 20 - Math.min(1, Math.max(0, (lastFreq - 400) / 3600.0)) * (h - 40);
+
+      // Emerald Dot (Turbidity)
+      chartCtx.fillStyle = '#059669';
+      chartCtx.beginPath();
+      chartCtx.arc(lastX - 4, lastTurbY, 4.5, 0, Math.PI * 2);
+      chartCtx.fill();
+      chartCtx.font = '600 11px var(--font-mono)';
+      chartCtx.fillText(`${lastTurb.toFixed(1)} NTU`, lastX - 70, Math.max(16, lastTurbY - 8));
+
+      // Violet Dot (Frequency)
+      chartCtx.fillStyle = '#4F46E5';
+      chartCtx.beginPath();
+      chartCtx.arc(lastX - 4, lastFreqY, 4.5, 0, Math.PI * 2);
+      chartCtx.fill();
+      chartCtx.fillText(`${lastFreq} Hz`, lastX - 70, Math.min(h - 6, lastFreqY + 16));
+    }
+
+    // =============================================================
+    // FRANÇOIS-GARRISON (1982) & RANGE LOSS GRAPH ENGINES
+    // =============================================================
+    const fgCanvas = document.getElementById('fgCanvas');
+    const fgCtx = fgCanvas.getContext('2d');
+    const tlCanvas = document.getElementById('tlCanvas');
+    const tlCtx = tlCanvas.getContext('2d');
+
+    // Rigorous François-Garrison (1982) Ocean Sound Absorption Engine
+    function calcFrancoisGarrisonAlpha(f_khz, S, T, D_m, pH = 8.0) {
+      const c = 1412.0 + 3.21 * T + 1.19 * S + 0.0167 * D_m; // sound speed (m/s)
+      const T_kelvin = T + 273.15;
+
+      // 1. Boric Acid chemical relaxation (f < 10 kHz)
+      const f1 = 2.8 * Math.sqrt(Math.max(1, S) / 35.0) * Math.pow(10.0, 4.0 - 1245.0 / T_kelvin);
+      const P1 = 1.0;
+      const A1 = (8.86 / c) * Math.pow(10.0, 0.78 * pH - 5.0);
+      const alpha_boric = (A1 * P1 * f1 * f_khz * f_khz) / (f1 * f1 + f_khz * f_khz);
+
+      // 2. Magnesium Sulfate (MgSO4) chemical relaxation (10 kHz - 500 kHz)
+      const f2 = (8.17 * Math.pow(10.0, 8.0 - 1990.0 / T_kelvin)) / (1.0 + 0.0018 * (Math.max(1, S) - 35.0));
+      const P2 = 1.0 - 1.37e-4 * D_m + 6.2e-9 * D_m * D_m;
+      const A2 = 21.44 * (Math.max(1, S) / c) * (1.0 + 0.025 * T);
+      const alpha_mgso4 = (A2 * P2 * f2 * f_khz * f_khz) / (f2 * f2 + f_khz * f_khz);
+
+      // 3. Pure Water Viscous Attenuation
+      const P3 = 1.0 - 3.83e-5 * D_m + 4.9e-10 * D_m * D_m;
+      let A3 = 0;
+      if (T <= 20.0) {
+        A3 = 4.937e-4 - 2.59e-5 * T + 9.11e-7 * T * T - 1.50e-8 * T * T * T;
+      } else {
+        A3 = 3.964e-4 - 1.146e-5 * T + 1.45e-7 * T * T - 6.5e-10 * T * T * T;
+      }
+      const alpha_water = A3 * P3 * f_khz * f_khz;
+
+      return alpha_boric + alpha_mgso4 + alpha_water; // Exact FG Chemical Absorption in dB/km
+    }
+
+    function renderFrancoisGarrison() {
+      const w = fgCanvas.width, h = fgCanvas.height;
+      fgCtx.fillStyle = "#FAFCFF";
+      fgCtx.fillRect(0, 0, w, h);
+
+      const turb = (typeof liveTurbidity === 'number') ? liveTurbidity : 12.0;
+      const sal = (typeof liveSal === 'number') ? liveSal : 35.0;
+      const temp = (typeof liveTemp === 'number') ? liveTemp : 24.5;
+      const depth = (typeof liveDepth === 'number') ? liveDepth : 15.0;
+
+      // Clean Grid & Axes
+      fgCtx.strokeStyle = 'rgba(203, 213, 225, 0.6)';
+      fgCtx.lineWidth = 0.8;
+      fgCtx.beginPath();
+      for (let yVal = 0; yVal <= 200; yVal += 50) {
+        const y = h - 22 - (yVal / 220) * (h - 35);
+        fgCtx.moveTo(35, y); fgCtx.lineTo(w - 10, y);
+      }
+      const xFreqs = [10, 100, 250, 400, 500];
+      xFreqs.forEach(freq => {
+        const x = 35 + ((freq - 10) / 490) * (w - 45);
+        fgCtx.moveTo(x, 8); fgCtx.lineTo(x, h - 22);
+      });
+      fgCtx.stroke();
+
+      // Axis Labels
+      fgCtx.fillStyle = '#64748B';
+      fgCtx.font = '9px var(--font-mono)';
+      fgCtx.textAlign = 'right';
+      for (let yVal = 0; yVal <= 200; yVal += 100) {
+        const y = h - 22 - (yVal / 220) * (h - 35);
+        fgCtx.fillText(`${yVal}`, 30, y + 3);
+      }
+      fgCtx.textAlign = 'center';
+      xFreqs.forEach(freq => {
+        const x = 35 + ((freq - 10) / 490) * (w - 45);
+        fgCtx.fillText(`${freq}k`, x, h - 8);
+      });
+
+      // Curve
+      const isHighTurb = turb > 80;
+      fgCtx.strokeStyle = isHighTurb ? '#E11D48' : '#0284C7';
+      fgCtx.lineWidth = 2.4;
+      fgCtx.beginPath();
+
+      for (let f = 10; f <= 500; f += 5) {
+        const a_fg = calcFrancoisGarrisonAlpha(f, sal, temp, depth);
+        const a_turb_penalty = 0.00085 * turb * Math.pow(f / 100.0, 1.35) * 1000.0;
+        const total = Math.min(220, a_fg + a_turb_penalty);
+
+        const x = 35 + ((f - 10) / 490) * (w - 45);
+        const y = h - 22 - (total / 220) * (h - 35);
+        if (f === 10) fgCtx.moveTo(x, y);
+        else fgCtx.lineTo(x, y);
+      }
+      fgCtx.stroke();
+
+      const a100 = (calcFrancoisGarrisonAlpha(100, sal, temp, depth) + 0.00085 * turb * 1000).toFixed(1);
+      const a450 = (calcFrancoisGarrisonAlpha(450, sal, temp, depth) + 0.00085 * turb * Math.pow(4.5, 1.35) * 1000).toFixed(1);
+
+      fgCtx.textAlign = 'left';
+      fgCtx.fillStyle = '#0F172A';
+      fgCtx.font = 'bold 10px var(--font-mono)';
+      fgCtx.fillText(`α(100kHz) = ${a100} dB/km  |  α(450kHz) = ${a450} dB/km`, 42, 20);
+      fgCtx.fillStyle = isHighTurb ? '#E11D48' : '#0284C7';
+      fgCtx.font = '9px var(--font-mono)';
+      fgCtx.fillText(`Suspended Particulate Scattering Penalty: +${(0.00085 * turb * 1000).toFixed(1)} dB/km`, 42, 33);
+
+      const fgMetricAlphaEl = document.getElementById('fgMetricAlpha');
+      if (fgMetricAlphaEl) fgMetricAlphaEl.innerText = `α(100k): ${a100} | α(450k): ${a450} dB/km`;
+    }
+
+    function renderTransmissionLoss() {
+      const w = tlCanvas.width, h = tlCanvas.height;
+      tlCtx.fillStyle = "#FAFCFF";
+      tlCtx.fillRect(0, 0, w, h);
+
+      const turb = (typeof liveTurbidity === 'number') ? liveTurbidity : 12.0;
+      const sal = (typeof liveSal === 'number') ? liveSal : 35.0;
+      const temp = (typeof liveTemp === 'number') ? liveTemp : 24.5;
+      const depth = (typeof liveDepth === 'number') ? liveDepth : 15.0;
+
+      const xMargin = 35, yMargin = 22;
+      const plotW = w - xMargin - 10;
+      const plotH = h - yMargin - 12;
+
+      // Blind Zone Background (>80 dB) vs Safe Zone (<80 dB)
+      const yThresh = h - yMargin - (80 / 120) * plotH;
+      tlCtx.fillStyle = 'rgba(244, 63, 94, 0.08)';
+      tlCtx.fillRect(xMargin, 12, plotW, yThresh - 12);
+      tlCtx.fillStyle = 'rgba(16, 185, 129, 0.06)';
+      tlCtx.fillRect(xMargin, yThresh, plotW, h - yMargin - yThresh);
+
+      // Grid
+      tlCtx.strokeStyle = 'rgba(203, 213, 225, 0.6)';
+      tlCtx.lineWidth = 0.8;
+      tlCtx.beginPath();
+      for (let loss = 0; loss <= 120; loss += 40) {
+        const y = h - yMargin - (loss / 120) * plotH;
+        tlCtx.moveTo(xMargin, y); tlCtx.lineTo(w - 10, y);
+      }
+      const xDistances = [50, 150, 300, 500];
+      xDistances.forEach(dist => {
+        const x = xMargin + ((dist - 10) / 490) * plotW;
+        tlCtx.moveTo(x, 12); tlCtx.lineTo(x, h - yMargin);
+      });
+      tlCtx.stroke();
+
+      // Axis Labels
+      tlCtx.fillStyle = '#64748B';
+      tlCtx.font = '9px var(--font-mono)';
+      tlCtx.textAlign = 'right';
+      for (let loss = 0; loss <= 120; loss += 40) {
+        const y = h - yMargin - (loss / 120) * plotH;
+        tlCtx.fillText(`${loss}dB`, xMargin - 4, y + 3);
+      }
+      tlCtx.textAlign = 'center';
+      xDistances.forEach(dist => {
+        const x = xMargin + ((dist - 10) / 490) * plotW;
+        tlCtx.fillText(`${dist}m`, x, h - 8);
+      });
+
+      // 80 dB Detection Limit Line
+      tlCtx.strokeStyle = '#E11D48';
+      tlCtx.lineWidth = 1.4;
+      tlCtx.setLineDash([4, 4]);
+      tlCtx.beginPath();
+      tlCtx.moveTo(xMargin, yThresh); tlCtx.lineTo(w - 10, yThresh);
+      tlCtx.stroke();
+      tlCtx.setLineDash([]);
+      tlCtx.fillStyle = '#E11D48';
+      tlCtx.font = 'bold 9px var(--font-mono)';
+      tlCtx.textAlign = 'left';
+      tlCtx.fillText('80 dB Sonar Sensitivity Threshold', xMargin + 8, yThresh - 4);
+
+      const a100_per_m = (calcFrancoisGarrisonAlpha(100, sal, temp, depth) + 0.00085 * turb * Math.pow(1.0, 1.35) * 1000.0) / 1000.0;
+      const a450_per_m = (calcFrancoisGarrisonAlpha(450, sal, temp, depth) + 0.00085 * turb * Math.pow(4.5, 1.35) * 1000.0) / 1000.0;
+
+      // 100 kHz (Cyan Line - Deep Penetration)
+      tlCtx.strokeStyle = '#0284C7';
+      tlCtx.lineWidth = 2.4;
+      tlCtx.beginPath();
+      for (let r = 10; r <= 500; r += 5) {
+        const tl = Math.min(120, 20 * Math.log10(r) + a100_per_m * r);
+        const x = xMargin + ((r - 10) / 490) * plotW;
+        const y = h - yMargin - (tl / 120) * plotH;
+        if (r === 10) tlCtx.moveTo(x, y);
+        else tlCtx.lineTo(x, y);
+      }
+      tlCtx.stroke();
+
+      // 450 kHz (Rose Line - High Res)
+      tlCtx.strokeStyle = '#E11D48';
+      tlCtx.lineWidth = 2.4;
+      tlCtx.beginPath();
+      let crossX = null, crossY = null, crossDist = null;
+      for (let r = 10; r <= 500; r += 5) {
+        const tl = 20 * Math.log10(r) + a450_per_m * r;
+        const clampedTl = Math.min(120, tl);
+        const x = xMargin + ((r - 10) / 490) * plotW;
+        const y = h - yMargin - (clampedTl / 120) * plotH;
+        if (r === 10) tlCtx.moveTo(x, y);
+        else tlCtx.lineTo(x, y);
+
+        if (tl >= 80 && crossDist === null) {
+          crossDist = r;
+          crossX = x;
+          crossY = yThresh;
+        }
+      }
+      tlCtx.stroke();
+
+      // Crossing Marker
+      if (crossX && crossDist < 500) {
+        tlCtx.fillStyle = '#E11D48';
+        tlCtx.beginPath();
+        tlCtx.arc(crossX, crossY, 4.5, 0, 2 * Math.PI);
+        tlCtx.fill();
+        tlCtx.font = 'bold 9px var(--font-mono)';
+        tlCtx.textAlign = 'center';
+        tlCtx.fillText(`HF Blind @ ${crossDist}m`, crossX, crossY - 8);
+      }
+
+      // Legend
+      tlCtx.textAlign = 'left';
+      tlCtx.fillStyle = '#0284C7';
+      tlCtx.font = 'bold 9px var(--font-mono)';
+      tlCtx.fillText(`● 100 kHz (LF Penetration)`, xMargin + 8, h - 8);
+      tlCtx.fillStyle = '#E11D48';
+      tlCtx.fillText(`● 450 kHz (HF High-Res)`, xMargin + 175, h - 8);
+
+      const fgMetricRangeEl = document.getElementById('fgMetricRange');
+      if (fgMetricRangeEl) {
+        fgMetricRangeEl.innerText = crossDist ? `HF Cutoff: ${crossDist}m | LF Safe: >500m` : `HF Cutoff: >450m | LF Safe: >500m`;
+      }
+    }
+
+    // Initialize all environmental parameters and ground station telemetry
+    updateTurbidity(12.0);
+    updateDepth(15.0);
+    updateTemperature(24.5);
+    updateSalinity(35.0);
+    updateAllSensorHealth(1, 1, 1, 1);
+    applyMode(0);
+
+    // Main animation loop
+    function mainAnimationLoop() {
+      renderScope();
+      renderFrancoisGarrison();
+      renderTransmissionLoss();
+      requestAnimationFrame(mainAnimationLoop);
+    }
+    mainAnimationLoop();
+  </script>
+</body>
+</html>

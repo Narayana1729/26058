@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aero-Hydro AUV Adaptive Sonar Simulator</title>
+  <style>
+    :root {
+      --bg: #07101B;
+      --card: #0D1929;
+      --card-alt: #142438;
+      --border: #1F334D;
+      --cyan: #00D4FF;
+      --cyan-soft: #64D2FF;
+      --orange: #FF8C38;
+      --white: #FFFFFF;
+      --muted: #8A99AD;
+      --green: #00E676;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--white);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Top Navbar */
+    header {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .title-area h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.5px;
+    }
+
+    .title-area p {
+      font-size: 0.78rem;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
+
+    .badge-bar {
+      display: flex;
+      gap: 12px;
+    }
+
+    .badge {
+      background: var(--card-alt);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Main Grid Layout */
+    .main-container {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 340px 1fr 380px;
+      gap: 12px;
+      padding: 12px;
+      height: calc(100vh - 65px);
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      background: var(--card-alt);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 14px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--cyanSoft);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-body {
+      padding: 14px;
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* Controls */
+    .control-group {
+      background: var(--card-alt);
+      border: 1px solid var(--border);
+      padding: 12px;
+      border-radius: 6px;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .control-label span.val {
+      color: var(--cyan);
+      font-family: monospace;
+      font-size: 0.9rem;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--cyan);
+      cursor: pointer;
+    }
+
+    .mode-select {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .btn-mode {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 8px 10px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .btn-mode.active {
+      background: var(--cyan);
+      color: #07101B;
+      border-color: var(--cyan);
+      font-weight: 700;
+    }
+
+    /* Sound Button */
+    .btn-sound {
+      background: var(--orange);
+      color: var(--bg);
+      border: none;
+      padding: 10px;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity 0.2s;
+    }
+
+    .btn-sound:hover {
+      opacity: 0.9;
+    }
+
+    /* Center Visual Screen (Water + AUV) */
+    .center-column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .ocean-viewport {
+      flex: 1;
+      position: relative;
+      background: #021226;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    #oceanCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .ocean-overlay {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(7, 16, 27, 0.75);
+      backdrop-filter: blur(4px);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 14px;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .ocean-overlay strong {
+      color: var(--white);
+    }
+
+    /* Oscilloscope Screen */
+    .scope-box {
+      height: 200px;
+      background: #050C14;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      position: relative;
+    }
+
+    #scopeCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Right Telemetry Column */
+    .metric-card {
+      background: var(--card-alt);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .metric-card .lbl {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .metric-card .big-val {
+      font-size: 1.35rem;
+      font-weight: 700;
+      font-family: monospace;
+      color: var(--cyan);
+    }
+
+    .metric-card .sub {
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    /* OLED Screen Emulation */
+    .oled-screen {
+      background: #000;
+      border: 2px solid #334;
+      border-radius: 6px;
+      padding: 12px;
+      font-family: "Courier New", monospace;
+      color: #64D2FF;
+      box-shadow: inset 0 0 10px rgba(0, 212, 255, 0.2);
+    }
+
+    .oled-screen .line1 { font-size: 0.82rem; font-weight: bold; border-bottom: 1px dashed #334; padding-bottom: 4px; margin-bottom: 6px; }
+    .oled-screen .line { font-size: 0.76rem; margin-bottom: 3px; display: flex; justify-content: space-between; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <header>
+    <div class="title-area">
+      <h1>AERO-HYDRO AUV ADAPTIVE SONAR MISSION CONTROL</h1>
+      <p>Real-Time Environmental Acoustic Simulation & Signal Generation</p>
+    </div>
+    <div class="badge-bar">
+      <div class="badge"><div class="badge-dot"></div> STM32 DMA: ACTIVE</div>
+      <div class="badge">CPU: SLEEP (2.1 mA)</div>
+      <div class="badge">POWER: 7.4V (2S Li-Ion)</div>
+    </div>
+  </header>
+
+  <!-- Main Grid -->
+  <div class="main-container">
+
+    <!-- Left Controls Panel -->
+    <div class="panel">
+      <div class="panel-header">
+        <span>🎛️ Environmental Sensors</span>
+        <span style="font-size: 0.7rem; color: var(--muted);">ADC SIMULATOR</span>
+      </div>
+      <div class="panel-body">
+        
+        <!-- Turbidity Slider -->
+        <div class="control-group">
+          <div class="control-label">
+            <span>Turbidity (Mud / Silt)</span>
+            <span class="val" id="turbVal">15 NTU</span>
+          </div>
+          <input type="range" id="turbSlider" min="0" max="100" value="15">
+        </div>
+
+        <!-- Depth Slider -->
+        <div class="control-group">
+          <div class="control-label">
+            <span>Hydrostatic Depth</span>
+            <span class="val" id="depthVal">25 m</span>
+          </div>
+          <input type="range" id="depthSlider" min="5" max="300" value="25">
+        </div>
+
+        <!-- Salinity Slider -->
+        <div class="control-group">
+          <div class="control-label">
+            <span>Salinity</span>
+            <span class="val" id="salVal">35 PSU</span>
+          </div>
+          <input type="range" id="salSlider" min="0" max="40" value="35">
+        </div>
+
+        <!-- Waveform Mode -->
+        <div class="control-group">
+          <div class="control-label">
+            <span>Modulation Family</span>
+          </div>
+          <div class="mode-select">
+            <button class="btn-mode active" onclick="setMode('LFM')">LFM Chirp</button>
+            <button class="btn-mode" onclick="setMode('HFM')">HFM (Doppler)</button>
+            <button class="btn-mode" onclick="setMode('BARKER')">Barker-13</button>
+            <button class="btn-mode" onclick="setMode('CW')">Continuous Wave</button>
+          </div>
+        </div>
+
+        <!-- Audio Demo Button -->
+        <button class="btn-sound" onclick="playAcousticPulse()">
+          🔊 Play Audible Sonar Ping
+        </button>
+
+      </div>
+    </div>
+
+    <!-- Center Column: Water Visual Simulation + Live Scope -->
+    <div class="center-column">
+      
+      <!-- Ocean Simulation Canvas -->
+      <div class="ocean-viewport">
+        <canvas id="oceanCanvas"></canvas>
+        <div class="ocean-overlay">
+          <div>Environment: <strong id="envStatusText">Clear Coastal Reef</strong></div>
+          <div style="margin-top: 2px;">Acoustic Attenuation: <strong id="lossText">12.4 dB/km</strong></div>
+        </div>
+      </div>
+
+      <!-- Real-Time Oscilloscope Screen -->
+      <div class="scope-box">
+        <canvas id="scopeCanvas"></canvas>
+      </div>
+
+    </div>
+
+    <!-- Right Telemetry & OLED Column -->
+    <div class="panel">
+      <div class="panel-header">
+        <span>📊 Telemetry & OLED</span>
+        <span style="font-size: 0.7rem; color: var(--green);">TRANSMITTING</span>
+      </div>
+      <div class="panel-body">
+
+        <!-- Embedded OLED Screen Display -->
+        <div class="oled-screen">
+          <div class="line1">♦ SDR SONAR PAYLOAD v1.0</div>
+          <div class="line"><span>MODE:</span><span id="oledMode">LFM UP-CHIRP</span></div>
+          <div class="line"><span>FREQ:</span><span id="oledFreq">450 kHz (High-Res)</span></div>
+          <div class="line"><span>PULSE:</span><span id="oledPulse">1.0 ms (Short)</span></div>
+          <div class="line"><span>ENV:</span><span id="oledEnv">CLEAR WATER</span></div>
+          <div class="line"><span>CPU:</span><span>SLEEP (2.1 mA) 🔋</span></div>
+        </div>
+
+        <!-- Metrics Cards -->
+        <div class="metric-card">
+          <div class="lbl">Synthesized Center Frequency</div>
+          <div class="big-val" id="metricFreq">450 kHz</div>
+          <div class="sub" id="metricSweep">Sweep: 425 kHz ➔ 475 kHz (50 kHz Bandwidth)</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="lbl">Theoretical Range Resolution</div>
+          <div class="big-val" id="metricRes">1.50 cm</div>
+          <div class="sub">ΔR = c / (2B) (c = 1500 m/s)</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="lbl">Francois-Garrison Absorption (α)</div>
+          <div class="big-val" id="metricAlpha">11.8 dB/km</div>
+          <div class="sub">Chemical relaxation loss in seawater</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="lbl">Predicted Acoustic Range</div>
+          <div class="big-val" id="metricRange">480 m</div>
+          <div class="sub">Echo SNR > 12 dB threshold</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // State variables
+    let turbidity = 15;
+    let depth = 25;
+    let salinity = 35;
+    let mode = 'LFM';
+    let centerFreq = 450;
+    let bandwidth = 50;
+    let pulseDuration = 1.0;
+    let audioCtx = null;
+
+    // Canvas elements
+    const oceanCanvas = document.getElementById('oceanCanvas');
+    const oceanCtx = oceanCanvas.getContext('2d');
+    const scopeCanvas = document.getElementById('scopeCanvas');
+    const scopeCtx = scopeCanvas.getContext('2d');
+
+    function resizeCanvas() {
+      oceanCanvas.width = oceanCanvas.parentElement.clientWidth;
+      oceanCanvas.height = oceanCanvas.parentElement.clientHeight;
+      scopeCanvas.width = scopeCanvas.parentElement.clientWidth;
+      scopeCanvas.height = scopeCanvas.parentElement.clientHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // DOM Controls
+    const turbSlider = document.getElementById('turbSlider');
+    const depthSlider = document.getElementById('depthSlider');
+    const salSlider = document.getElementById('salSlider');
+
+    turbSlider.addEventListener('input', (e) => {
+      turbidity = parseInt(e.target.value);
+      document.getElementById('turbVal').innerText = turbidity + ' NTU';
+      updateAdaptation();
+    });
+
+    depthSlider.addEventListener('input', (e) => {
+      depth = parseInt(e.target.value);
+      document.getElementById('depthVal').innerText = depth + ' m';
+      updateAdaptation();
+    });
+
+    salSlider.addEventListener('input', (e) => {
+      salinity = parseInt(e.target.value);
+      document.getElementById('salVal').innerText = salinity + ' PSU';
+      updateAdaptation();
+    });
+
+    function setMode(m) {
+      mode = m;
+      document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      updateAdaptation();
+    }
+
+    // Dynamic Adaptation Engine (Simulating STM32 firmware logic)
+    function updateAdaptation() {
+      let envText = "Clear Coastal Reef";
+      let oledEnvText = "CLEAR WATER";
+      
+      if (turbidity > 60) {
+        centerFreq = 100; // Low frequency penetration
+        bandwidth = 15;
+        pulseDuration = 5.0;
+        envText = "Muddy Coastal Estuary (High Sediment)";
+        oledEnvText = "MUDDY ESTUARY";
+      } else if (turbidity > 30 || depth > 100) {
+        centerFreq = 250;
+        bandwidth = 30;
+        pulseDuration = 2.5;
+        envText = "Continental Shelf (Moderate Depth)";
+        oledEnvText = "CONTINENTAL SHELF";
+      } else {
+        centerFreq = 450;
+        bandwidth = 50;
+        pulseDuration = 1.0;
+        envText = "Clear Shallow Reef (High-Resolution)";
+        oledEnvText = "CLEAR WATER";
+      }
+
+      // Calculations
+      const resolution = (1500 / (2 * bandwidth * 1000) * 100).toFixed(2);
+      const alpha = (0.1 * (centerFreq**2) / (1 + centerFreq**2) + 0.0004 * centerFreq**2 + (turbidity * 0.25)).toFixed(1);
+      const maxRange = Math.round(1200 / (1 + parseFloat(alpha) * 0.05));
+
+      // Update UI
+      document.getElementById('envStatusText').innerText = envText;
+      document.getElementById('lossText').innerText = alpha + ' dB/km';
+      document.getElementById('oledMode').innerText = mode === 'LFM' ? 'LFM UP-CHIRP' : mode;
+      document.getElementById('oledFreq').innerText = centerFreq + ' kHz';
+      document.getElementById('oledPulse').innerText = pulseDuration + ' ms';
+      document.getElementById('oledEnv').innerText = oledEnvText;
+
+      document.getElementById('metricFreq').innerText = centerFreq + ' kHz';
+      document.getElementById('metricSweep').innerText = `Sweep: ${centerFreq - bandwidth/2} ➔ ${centerFreq + bandwidth/2} kHz (${bandwidth} kHz BW)`;
+      document.getElementById('metricRes').innerText = resolution + ' cm';
+      document.getElementById('metricAlpha').innerText = alpha + ' dB/km';
+      document.getElementById('metricRange').innerText = maxRange + ' m';
+    }
+
+    // Audio Playback using Web Audio API
+    function playAcousticPulse() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      
+      const audioStartFreq = centerFreq > 200 ? 1200 : 400;
+      const audioEndFreq = audioStartFreq + (bandwidth * 40);
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(audioStartFreq, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(audioEndFreq, audioCtx.currentTime + (pulseDuration * 0.08));
+
+      // Tukey envelope emulation
+      gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.02);
+      gain.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + (pulseDuration * 0.08) - 0.02);
+      gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + (pulseDuration * 0.08));
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start();
+      osc.stop(audioCtx.currentTime + (pulseDuration * 0.08));
+    }
+
+    // Animation Loop
+    let auvX = 80;
+    let auvY = 120;
+    let pulseRadius = 0;
+    let scopePhase = 0;
+
+    function render() {
+      // 1. Draw Ocean Scene
+      const w = oceanCanvas.width;
+      const h = oceanCanvas.height;
+
+      // Background color depends on turbidity
+      const r = Math.min(60, 2 + turbidity * 0.5);
+      const g = Math.min(45, 18 + turbidity * 0.2);
+      const b = Math.max(10, 38 - turbidity * 0.3);
+      oceanCtx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+      oceanCtx.fillRect(0, 0, w, h);
+
+      // Draw sediment silt particles if turbid
+      if (turbidity > 20) {
+        oceanCtx.fillStyle = "rgba(180, 150, 100, 0.25)";
+        for (let i = 0; i < turbidity * 2; i++) {
+          const px = (Math.sin(i * 99 + Date.now() * 0.001) * 0.5 + 0.5) * w;
+          const py = (Math.cos(i * 33 + Date.now() * 0.0008) * 0.5 + 0.5) * h;
+          oceanCtx.beginPath();
+          oceanCtx.arc(px, py, 1.5, 0, Math.PI * 2);
+          oceanCtx.fill();
+        }
+      }
+
+      // Draw Seabed
+      oceanCtx.fillStyle = "#0A1B2A";
+      oceanCtx.beginPath();
+      oceanCtx.moveTo(0, h - 30);
+      oceanCtx.bezierCurveTo(w * 0.3, h - 50, w * 0.7, h - 15, w, h - 40);
+      oceanCtx.lineTo(w, h);
+      oceanCtx.lineTo(0, h);
+      oceanCtx.fill();
+
+      // Draw Sonar Acoustic Pulses
+      pulseRadius += 2.5;
+      if (pulseRadius > 220) pulseRadius = 0;
+
+      const beamAngle = centerFreq > 300 ? 0.35 : 0.75; // high freq = narrower beam
+      oceanCtx.save();
+      oceanCtx.translate(auvX + 45, auvY + 12);
+      oceanCtx.strokeStyle = centerFreq > 300 ? "#00D4FF" : "#FF8C38";
+      oceanCtx.lineWidth = 2;
+
+      for (let rOffset = 0; rOffset < 3; rOffset++) {
+        const pr = (pulseRadius - rOffset * 40);
+        if (pr > 0) {
+          oceanCtx.beginPath();
+          oceanCtx.arc(0, 0, pr, -beamAngle, beamAngle);
+          oceanCtx.globalAlpha = Math.max(0, 1 - pr / 220);
+          oceanCtx.stroke();
+        }
+      }
+      oceanCtx.restore();
+
+      // Draw AUV Body (Submarine)
+      auvY = 80 + (depth / 300) * (h - 180);
+      oceanCtx.save();
+      oceanCtx.translate(auvX, auvY);
+      
+      // Hull
+      oceanCtx.fillStyle = "#D4AF37"; // Golden/Yellow AUV Hull
+      oceanCtx.beginPath();
+      oceanCtx.roundRect(0, 0, 50, 24, 12);
+      oceanCtx.fill();
+      oceanCtx.strokeStyle = "#1F334D";
+      oceanCtx.lineWidth = 1.5;
+      oceanCtx.stroke();
+
+      // Transducer Nose Head (Acoustic Head)
+      oceanCtx.fillStyle = "#00D4FF";
+      oceanCtx.beginPath();
+      oceanCtx.arc(44, 12, 8, -Math.PI/2, Math.PI/2);
+      oceanCtx.fill();
+
+      // Tail Propeller
+      oceanCtx.fillStyle = "#8A99AD";
+      oceanCtx.fillRect(-6, 7, 6, 10);
+      oceanCtx.restore();
+
+      // 2. Draw Oscilloscope Waveform
+      const sw = scopeCanvas.width;
+      const sh = scopeCanvas.height;
+      scopeCtx.fillStyle = "#050C14";
+      scopeCtx.fillRect(0, 0, sw, sh);
+
+      // Grid lines
+      scopeCtx.strokeStyle = "#102030";
+      scopeCtx.lineWidth = 1;
+      for (let x = 0; x < sw; x += 40) {
+        scopeCtx.beginPath(); scopeCtx.moveTo(x, 0); scopeCtx.lineTo(x, sh); scopeCtx.stroke();
+      }
+      for (let y = 0; y < sh; y += 30) {
+        scopeCtx.beginPath(); scopeCtx.moveTo(0, y); scopeCtx.lineTo(sw, y); scopeCtx.stroke();
+      }
+
+      // Live Chirp Sine Wave
+      scopePhase += 0.06;
+      scopeCtx.strokeStyle = "#00D4FF";
+      scopeCtx.lineWidth = 2;
+      scopeCtx.beginPath();
+
+      const sweepRate = centerFreq / 150;
+      for (let x = 0; x < sw; x++) {
+        const normX = x / sw;
+        // Tukey window envelope
+        let win = 1.0;
+        if (normX < 0.15) win = 0.5 * (1 + Math.cos(Math.PI * (normX / 0.15 - 1)));
+        else if (normX > 0.85) win = 0.5 * (1 + Math.cos(Math.PI * ((normX - 0.85) / 0.15)));
+
+        const instFreq = (1.0 + normX * sweepRate * 3.5);
+        const y = (sh / 2) + Math.sin(normX * 35 * instFreq + scopePhase) * (sh * 0.38) * win;
+        if (x === 0) scopeCtx.moveTo(x, y);
+        else scopeCtx.lineTo(x, y);
+      }
+      scopeCtx.stroke();
+
+      // Scope Overlay
+      scopeCtx.fillStyle = "#8A99AD";
+      scopeCtx.font = "10px monospace";
+      scopeCtx.fillText(`CH1: 500mV/div | TIM_ARR: ${Math.round(839 * (450/centerFreq))} | fc: ${centerFreq} kHz`, 10, 16);
+
+      requestAnimationFrame(render);
+    }
+
+    updateAdaptation();
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Person 1: DSP Waveform & Ocean Physics Visualizer</title>
+  <style>
+    :root {
+      --bg: #070D18;
+      --panel: #0D1B2A;
+      --panel-border: #1B2E4B;
+      --cyan: #00E5FF;
+      --green: #00E676;
+      --amber: #FFB300;
+      --red: #FF5252;
+      --text: #E0E6ED;
+      --muted: #7E92A8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--panel-border);
+      margin-bottom: 16px;
+    }
+
+    .badge {
+      background: rgba(0, 229, 255, 0.12);
+      color: var(--cyan);
+      border: 1px solid var(--cyan);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 320px 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 1100px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 14px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .panel-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--cyan);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .control-group {
+      margin-bottom: 12px;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .control-val {
+      color: #FFF;
+      font-weight: 700;
+    }
+
+    input[type=range] {
+      width: 100%;
+      accent-color: var(--cyan);
+      cursor: pointer;
+    }
+
+    .status-card {
+      background: rgba(0, 230, 118, 0.08);
+      border: 1px solid var(--green);
+      border-radius: 6px;
+      padding: 12px;
+      margin-top: 14px;
+      transition: all 0.3s;
+    }
+
+    .status-title {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .status-val {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--green);
+      margin: 4px 0;
+    }
+
+    .status-meta {
+      font-size: 0.8rem;
+      color: var(--text);
+      line-height: 1.4;
+    }
+
+    .audio-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 10px 14px;
+      margin-top: 10px;
+      background: linear-gradient(135deg, #00E5FF, #0088FF);
+      color: #070D18;
+      font-weight: 800;
+      font-size: 0.85rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0, 229, 255, 0.35);
+      transition: all 0.2s ease;
+    }
+
+    .audio-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 229, 255, 0.6);
+    }
+
+    .audio-btn.secondary {
+      background: rgba(0, 229, 255, 0.1);
+      color: var(--cyan);
+      border: 1px solid var(--cyan);
+      box-shadow: none;
+    }
+
+    .audio-btn.active {
+      background: #00E676;
+      color: #070D18;
+    }
+
+    canvas {
+      width: 100%;
+      height: 180px;
+      background: #050B14;
+      border: 1px solid #14243B;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .sub-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .code-preview {
+      background: #050B14;
+      border: 1px solid #14243B;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 0.75rem;
+      color: #A0C0E0;
+      max-height: 90px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      font-family: Consolas, monospace;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div>
+      <h1 style="font-size: 1.25rem; font-weight: 800;">🌊 Person 1: Dual-Layer Software-Defined Sonar Dashboard</h1>
+      <p style="font-size: 0.82rem; color: var(--muted); margin-top: 2px;">Harmonized Model: STM32 Baseband Chirp (1-20
+        kHz @ 100 kHz Fs) + Ocean Acoustic Carriers (100 kHz & 450 kHz)</p>
+    </div>
+    <span class="badge">PERSON 1 LEAD TOOL</span>
+  </header>
+
+  <div class="grid">
+
+    <!-- CONTROLS COLUMN -->
+    <div class="panel">
+      <div class="panel-title">🎛️ Environmental & DSP Controls</div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>Turbidity (Murkiness)</span>
+          <span class="control-val" id="val-turb">10 NTU</span>
+        </div>
+        <input type="range" id="slider-turb" min="0" max="200" value="10" step="1">
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>Ocean Salinity</span>
+          <span class="control-val" id="val-sal">35 PSU</span>
+        </div>
+        <input type="range" id="slider-sal" min="0" max="45" value="35" step="1">
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>Water Depth</span>
+          <span class="control-val" id="val-depth">25 m</span>
+        </div>
+        <input type="range" id="slider-depth" min="1" max="1000" value="45" step="5">
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>Water Temperature</span>
+          <span class="control-val" id="val-temp">15 °C</span>
+        </div>
+        <input type="range" id="slider-temp" min="2" max="30" value="15" step="1">
+      </div>
+
+      <hr style="border: 0; border-top: 1px solid var(--panel-border); margin: 14px 0;">
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>Modulation Type (SIH Mandate)</span>
+          <span class="control-val" id="val-mod">LFM Chirp</span>
+        </div>
+        <select id="select-mod" style="width:100%; background:#14243B; color:#00E5FF; border:1px solid var(--panel-border); border-radius:4px; padding:6px 8px; font-weight:700;">
+          <option value="LFM">1. Linear Frequency Modulation (LFM Chirp)</option>
+          <option value="GEOMETRIC">2. Geometric / Exponential Sweep (EFM)</option>
+          <option value="HFM">3. Hyperbolic Doppler-Tolerant (HFM)</option>
+          <option value="BARKER13">4. Phase-Coded Pulse (13-Bit Barker BPSK)</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>Tukey Alpha (Taper Envelope)</span>
+          <span class="control-val" id="val-alpha">0.25</span>
+        </div>
+        <input type="range" id="slider-alpha" min="0" max="1" value="0.25" step="0.05">
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>Sample Clock (fs)</span>
+          <span class="control-val" id="val-fs">100 kHz</span>
+        </div>
+        <input type="range" id="slider-fs" min="50" max="250" value="100" step="10">
+      </div>
+
+      <!-- ACTIVE FIRMWARE PROFILE CARD -->
+      <div class="status-card" id="status-card">
+        <div class="status-title">STM32 Automatic Decision Engine</div>
+        <div class="status-val" id="status-mode">MODE 0: HIGH RES (450 kHz)</div>
+        <div class="status-meta" id="status-desc">
+          • STM32 Register: <b>TIM6->ARR = 359</b><br>
+          • Target Band: <b>450 kHz High Resolution</b><br>
+          • Clean water allows maximum optical & acoustic clarity.
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 1: DSP WAVEFORM VISUALIZER -->
+    <div class="panel">
+      <div class="panel-title">📈 Day 1: 12-Bit Tukey LFM Chirp Synthesis</div>
+
+      <div class="sub-label">1. Quantized Time-Domain DAC Waveform (512 Points: 0 to 4095)</div>
+      <canvas id="canvas-wave" width="500" height="180"></canvas>
+
+      <div class="sub-label">2. FFT Frequency Magnitude Spectrum (Passband)</div>
+      <canvas id="canvas-fft" width="500" height="180"></canvas>
+
+      <div class="sub-label">3. Live Export Stream (chirp_lut.h preview)</div>
+      <div class="code-preview" id="code-preview">const uint16_t chirp_lfm_tukey[512] = { 2048, 2048, 2050, 2058, ... };
+      </div>
+    </div>
+
+    <!-- DAY 2: OCEAN ACOUSTICS & TRANSMISSION LOSS -->
+    <div class="panel">
+      <div class="panel-title">🌊 Day 2: Francois-Garrison Ocean Propagation</div>
+
+      <div class="sub-label">1. Ocean Sound Absorption α(f) [10 kHz to 500 kHz]</div>
+      <canvas id="canvas-fg" width="500" height="180"></canvas>
+
+      <div class="sub-label">2. Sonar Range Transmission Loss (dB) vs Distance (10 - 500m)</div>
+      <canvas id="canvas-tl" width="500" height="180"></canvas>
+
+      <div class="sub-label">3. Active Adaptation Rule</div>
+      <div class="code-preview" id="rule-preview">if (PA0_Turbidity < 1240) -> Mode 0 (450 kHz High Res)
+          else if (PA0_Turbidity > 2480) -> Mode 2 (100 kHz Deep Pen)</div>
+    </div>
+
+  </div>
+
+  <script>
+    // State
+    const SAMPLES = 512;
+    const canvasWave = document.getElementById('canvas-wave');
+    const ctxWave = canvasWave.getContext('2d');
+    const canvasFft = document.getElementById('canvas-fft');
+    const ctxFft = canvasFft.getContext('2d');
+    const canvasFg = document.getElementById('canvas-fg');
+    const ctxFg = canvasFg.getContext('2d');
+    const canvasTl = document.getElementById('canvas-tl');
+    const ctxTl = canvasTl.getContext('2d');
+
+    // Controls
+    const sTurb = document.getElementById('slider-turb');
+    const sSal = document.getElementById('slider-sal');
+    const sDepth = document.getElementById('slider-depth');
+    const sTemp = document.getElementById('slider-temp');
+    const sAlpha = document.getElementById('slider-alpha');
+    const sFs = document.getElementById('slider-fs');
+    const sMod = document.getElementById('select-mod');
+
+    const BARKER_13 = [+1, +1, +1, +1, +1, -1, -1, +1, +1, -1, +1, -1, +1];
+
+    function update() {
+      const turb = parseFloat(sTurb.value);
+      const sal = parseFloat(sSal.value);
+      const depth = parseFloat(sDepth.value);
+      const temp = parseFloat(sTemp.value);
+      const alpha = parseFloat(sAlpha.value);
+      const fs = parseFloat(sFs.value) * 1000;
+      const modType = sMod.value;
+
+      document.getElementById('val-turb').innerText = turb + ' NTU';
+      document.getElementById('val-sal').innerText = sal + ' PSU';
+      document.getElementById('val-depth').innerText = depth + ' m';
+      document.getElementById('val-temp').innerText = temp + ' °C';
+      document.getElementById('val-alpha').innerText = alpha.toFixed(2);
+      document.getElementById('val-fs').innerText = (fs / 1000) + ' kHz';
+      document.getElementById('val-mod').innerText = sMod.options[sMod.selectedIndex].text.split(' ')[1];
+
+      // 1. Evaluate Mode with strict Nyquist Safety
+      const statusCard = document.getElementById('status-card');
+      const statusMode = document.getElementById('status-mode');
+      const statusDesc = document.getElementById('status-desc');
+
+      const maxSafeFreq = Math.floor(fs * 0.42); // Strict Nyquist safety margin (f_max < 0.42 * fs)
+      let f0 = 1000, f1 = Math.min(20000, maxSafeFreq);
+
+      if (turb < 25) {
+        statusCard.style.borderColor = 'var(--green)';
+        statusCard.style.background = 'rgba(0, 230, 118, 0.08)';
+        statusMode.innerText = `MODE 0: CLEAR WATER [${modType}] (450 kHz Carrier)`;
+        statusMode.style.color = 'var(--green)';
+        f0 = 2000;
+        f1 = Math.min(25000, maxSafeFreq);
+        statusDesc.innerHTML = `• <b>Baseband Mod</b>: ${modType} (${(f0 / 1000).toFixed(1)}–${(f1 / 1000).toFixed(1)} kHz @ ${(fs / 1000).toFixed(0)} ksps)<br>• <b>Acoustic Carrier</b>: 450 kHz Transducer (High Spatial Resolution)<br>• <b>Timer Register</b>: TIM6->ARR = ${(84000000 / fs - 1).toFixed(0)}`;
+      } else if (turb > 90) {
+        statusCard.style.borderColor = 'var(--red)';
+        statusCard.style.background = 'rgba(255, 82, 82, 0.08)';
+        statusMode.innerText = `MODE 2: TURBID / MUDDY [${modType}] (100 kHz Carrier)`;
+        statusMode.style.color = 'var(--red)';
+        f0 = 500;
+        f1 = Math.min(8000, maxSafeFreq);
+        statusDesc.innerHTML = `• <b>Baseband Mod</b>: ${modType} (${(f0 / 1000).toFixed(1)}–${(f1 / 1000).toFixed(1)} kHz @ ${(fs / 1000).toFixed(0)} ksps)<br>• <b>Acoustic Carrier</b>: 100 kHz Transducer (Deep Mud Penetration)<br>• <b>Timer Register</b>: TIM6->ARR = ${(84000000 / fs - 1).toFixed(0)}`;
+      } else {
+        statusCard.style.borderColor = 'var(--amber)';
+        statusCard.style.background = 'rgba(255, 179, 0, 0.08)';
+        statusMode.innerText = `MODE 1: BALANCED COASTAL [${modType}] (250 kHz Carrier)`;
+        statusMode.style.color = 'var(--amber)';
+        f0 = 1000;
+        f1 = Math.min(18000, maxSafeFreq);
+        statusDesc.innerHTML = `• <b>Baseband Mod</b>: ${modType} (${(f0 / 1000).toFixed(1)}–${(f1 / 1000).toFixed(1)} kHz @ ${(fs / 1000).toFixed(0)} ksps)<br>• <b>Acoustic Carrier</b>: 250 kHz Transducer (Balanced Range/Res)<br>• <b>Timer Register</b>: TIM6->ARR = ${(84000000 / fs - 1).toFixed(0)}`;
+      }
+
+      // 2. Synthesize Waveform with Exact Timing (t = i / fs)
+      const Tp = SAMPLES / fs;
+      const B = f1 - f0;
+      const samples = [];
+      for (let i = 0; i < SAMPLES; i++) {
+        const t = i / fs;
+        // Tukey window
+        let w = 1.0;
+        if (alpha > 0) {
+          const edge = alpha / 2.0;
+          const pos = i / (SAMPLES - 1);
+          if (pos < edge) {
+            w = 0.5 * (1 + Math.cos(Math.PI * ((2 * pos / alpha) - 1)));
+          } else if (pos > 1 - edge) {
+            w = 0.5 * (1 + Math.cos(Math.PI * ((2 * pos / alpha) - (2 / alpha) + 1)));
+          }
+        }
+
+        let raw = 0;
+        if (modType === 'LFM') {
+          raw = Math.sin(2 * Math.PI * (f0 * t + 0.5 * (B / Tp) * t * t));
+        } else if (modType === 'GEOMETRIC') {
+          const gamma = Math.log(f1 / f0);
+          const phase = (2 * Math.PI * f0 * Tp / gamma) * (Math.exp(gamma * t / Tp) - 1.0);
+          raw = Math.sin(phase);
+        } else if (modType === 'HFM') {
+          const k = (f1 - f0) / (f1 * Tp);
+          const arg = Math.max(1e-6, 1.0 - k * t);
+          const phase = -2 * Math.PI * ((f0 * f1 * Tp) / (f1 - f0)) * Math.log(arg);
+          raw = Math.sin(phase);
+        } else if (modType === 'BARKER13') {
+          const chipLen = SAMPLES / 13.0;
+          const chipIdx = Math.min(12, Math.floor(i / chipLen));
+          const polarity = BARKER_13[chipIdx];
+          raw = polarity * Math.sin(2 * Math.PI * (f0 + B * 0.5) * t);
+        }
+
+        const s = raw * w;
+        const dac = Math.round(2047.5 * (1.0 + s));
+        samples.push(Math.max(0, Math.min(4095, dac)));
+      }
+
+      // Draw Wave & True Computed FFT
+      drawWave(samples);
+      drawRealFft(samples, fs, f0, f1);
+      drawFrancoisGarrison(turb, sal, temp, depth);
+      drawTransmissionLoss(turb, sal, temp, depth);
+
+      // Code preview
+      document.getElementById('code-preview').innerText =
+        `const uint16_t chirp_${modType.toLowerCase()}_tukey[512] = { ${samples.slice(0, 8).join(', ')}, ..., ${samples.slice(-4).join(', ')} };`;
+    }
+
+    sMod.addEventListener('change', update);
+
+    function drawWave(samples) {
+      const w = canvasWave.width, h = canvasWave.height;
+      ctxWave.clearRect(0, 0, w, h);
+
+      // Grid
+      ctxWave.strokeStyle = '#14243B';
+      ctxWave.lineWidth = 1;
+      ctxWave.beginPath();
+      for (let y = 20; y < h; y += 35) { ctxWave.moveTo(0, y); ctxWave.lineTo(w, y); }
+      for (let x = 50; x < w; x += 60) { ctxWave.moveTo(x, 0); ctxWave.lineTo(x, h); }
+      ctxWave.stroke();
+
+      // Midline
+      ctxWave.strokeStyle = '#2A4365';
+      ctxWave.setLineDash([4, 4]);
+      ctxWave.beginPath();
+      ctxWave.moveTo(0, h / 2); ctxWave.lineTo(w, h / 2);
+      ctxWave.stroke();
+      ctxWave.setLineDash([]);
+
+      // Trace
+      ctxWave.strokeStyle = '#00E5FF';
+      ctxWave.lineWidth = 1.6;
+      ctxWave.beginPath();
+      for (let i = 0; i < samples.length; i++) {
+        const x = (i / (samples.length - 1)) * w;
+        const y = h - (samples[i] / 4095) * (h - 16) - 8;
+        if (i === 0) ctxWave.moveTo(x, y);
+        else ctxWave.lineTo(x, y);
+      }
+      ctxWave.stroke();
+
+      // Labels
+      ctxWave.fillStyle = '#7E92A8';
+      ctxWave.font = '10px monospace';
+      ctxWave.fillText('3.3V (4095)', 8, 16);
+      ctxWave.fillText('1.65V (2048)', 8, h / 2 - 4);
+      ctxWave.fillText('0.0V (0)', 8, h - 6);
+    }
+
+    // Real Discrete Fourier Transform (DFT / FFT) computation on actual samples
+    function drawRealFft(samples, fs, f0, f1) {
+      const w = canvasFft.width, h = canvasFft.height;
+      ctxFft.clearRect(0, 0, w, h);
+
+      // Grid & Decibel markings
+      ctxFft.strokeStyle = '#14243B';
+      ctxFft.lineWidth = 1;
+      ctxFft.beginPath();
+      for (let y = 20; y < h; y += 35) { ctxFft.moveTo(0, y); ctxFft.lineTo(w, y); }
+      for (let x = 50; x < w; x += 60) { ctxFft.moveTo(x, 0); ctxFft.lineTo(x, h); }
+      ctxFft.stroke();
+
+      const N = samples.length;
+      const numBins = Math.floor(N / 2);
+      const mag = new Float32Array(numBins);
+      let maxMag = 1e-6;
+
+      // Remove DC offset for spectral calculation
+      const x_ac = new Float32Array(N);
+      let mean = 0;
+      for (let i = 0; i < N; i++) mean += samples[i];
+      mean /= N;
+      for (let i = 0; i < N; i++) x_ac[i] = samples[i] - mean;
+
+      // Compute DFT bins: X[k] = sum(x[n] * exp(-j*2*pi*k*n/N))
+      for (let k = 0; k < numBins; k++) {
+        let real = 0, imag = 0;
+        const angleStep = (2 * Math.PI * k) / N;
+        for (let n = 0; n < N; n++) {
+          const angle = angleStep * n;
+          real += x_ac[n] * Math.cos(angle);
+          imag -= x_ac[n] * Math.sin(angle);
+        }
+        const m = Math.sqrt(real * real + imag * imag);
+        mag[k] = m;
+        if (m > maxMag) maxMag = m;
+      }
+
+      // Plot Real Computed FFT in Decibels (0 dB to -60 dB)
+      ctxFft.strokeStyle = '#00E676';
+      ctxFft.lineWidth = 1.8;
+      ctxFft.beginPath();
+
+      for (let k = 0; k < numBins; k++) {
+        const freq_k = (k * fs) / N;
+        const x = (freq_k / (fs / 2)) * w;
+
+        // Logarithmic power dB relative to peak (0 dB down to -60 dB floor)
+        const db = 20 * Math.log10(Math.max(1e-4, mag[k] / maxMag));
+        const normalizedY = Math.max(0, (db + 60) / 60); // 0 dB = 1.0, -60 dB = 0.0
+        const y = h - 15 - normalizedY * (h - 35);
+
+        if (k === 0) ctxFft.moveTo(x, y);
+        else ctxFft.lineTo(x, y);
+      }
+      ctxFft.stroke();
+
+      // Annotations
+      ctxFft.fillStyle = '#00E676';
+      ctxFft.font = '10px monospace';
+      ctxFft.fillText(`Computed 512-pt DFT: ${(f0 / 1000).toFixed(1)}k - ${(f1 / 1000).toFixed(1)}kHz (Nyquist: ${(fs / 2000).toFixed(0)}kHz)`, 10, 16);
+      ctxFft.fillStyle = '#7E92A8';
+      ctxFft.fillText('0 dB', w - 35, 25);
+      ctxFft.fillText('-40 dB', w - 45, h - 35);
+    }
+
+    // Rigorous Francois-Garrison (1982) Ocean Sound Absorption Engine
+    function calcFrancoisGarrisonAlpha(f_khz, S, T, D_m, pH = 8.0) {
+      const c = 1412.0 + 3.21 * T + 1.19 * S + 0.0167 * D_m; // sound speed (m/s)
+      const T_kelvin = T + 273.15;
+
+      // 1. Boric Acid chemical relaxation (f < 10 kHz)
+      const f1 = 2.8 * Math.sqrt(S / 35.0) * Math.pow(10.0, 4.0 - 1245.0 / T_kelvin);
+      const P1 = 1.0;
+      const A1 = (8.86 / c) * Math.pow(10.0, 0.78 * pH - 5.0);
+      const alpha_boric = (A1 * P1 * f1 * f_khz * f_khz) / (f1 * f1 + f_khz * f_khz);
+
+      // 2. Magnesium Sulfate (MgSO4) chemical relaxation (10 kHz - 500 kHz)
+      const f2 = (8.17 * Math.pow(10.0, 8.0 - 1990.0 / T_kelvin)) / (1.0 + 0.0018 * (S - 35.0));
+      const P2 = 1.0 - 1.37e-4 * D_m + 6.2e-9 * D_m * D_m;
+      const A2 = 21.44 * (S / c) * (1.0 + 0.025 * T);
+      const alpha_mgso4 = (A2 * P2 * f2 * f_khz * f_khz) / (f2 * f2 + f_khz * f_khz);
+
+      // 3. Pure Water Viscous Attenuation
+      const P3 = 1.0 - 3.83e-5 * D_m + 4.9e-10 * D_m * D_m;
+      let A3 = 0;
+      if (T <= 20.0) {
+        A3 = 4.937e-4 - 2.59e-5 * T + 9.11e-7 * T * T - 1.50e-8 * T * T * T;
+      } else {
+        A3 = 3.964e-4 - 1.146e-5 * T + 1.45e-7 * T * T - 6.5e-10 * T * T * T;
+      }
+      const alpha_water = A3 * P3 * f_khz * f_khz;
+
+      return alpha_boric + alpha_mgso4 + alpha_water; // Exact FG Chemical Absorption in dB / km
+    }
+
+    function drawFrancoisGarrison(turb, sal, temp, depth) {
+      const w = canvasFg.width, h = canvasFg.height;
+      ctxFg.clearRect(0, 0, w, h);
+
+      // Clean Grid & Axes
+      ctxFg.strokeStyle = '#1E293B';
+      ctxFg.lineWidth = 0.8;
+      ctxFg.beginPath();
+      for (let yVal = 0; yVal <= 200; yVal += 50) {
+        const y = h - 22 - (yVal / 220) * (h - 35);
+        ctxFg.moveTo(35, y); ctxFg.lineTo(w - 10, y);
+      }
+      const xFreqs = [10, 100, 250, 400, 500];
+      xFreqs.forEach(freq => {
+        const x = 35 + ((freq - 10) / 490) * (w - 45);
+        ctxFg.moveTo(x, 8); ctxFg.lineTo(x, h - 22);
+      });
+      ctxFg.stroke();
+
+      // Axis Labels
+      ctxFg.fillStyle = '#64748B';
+      ctxFg.font = '9px monospace';
+      ctxFg.textAlign = 'right';
+      for (let yVal = 0; yVal <= 200; yVal += 100) {
+        const y = h - 22 - (yVal / 220) * (h - 35);
+        ctxFg.fillText(`${yVal}`, 30, y + 3);
+      }
+      ctxFg.textAlign = 'center';
+      xFreqs.forEach(freq => {
+        const x = 35 + ((freq - 10) / 490) * (w - 45);
+        ctxFg.fillText(`${freq}k`, x, h - 8);
+      });
+
+      // Curve
+      const isHighTurb = turb > 80;
+      ctxFg.strokeStyle = isHighTurb ? '#FF5252' : '#00E5FF';
+      ctxFg.lineWidth = 2.4;
+      ctxFg.beginPath();
+
+      for (let f = 10; f <= 500; f += 5) {
+        const a_fg = calcFrancoisGarrisonAlpha(f, sal, temp, depth);
+        const a_turb_penalty = 0.00085 * turb * Math.pow(f / 100.0, 1.35) * 1000.0;
+        const total = Math.min(220, a_fg + a_turb_penalty);
+
+        const x = 35 + ((f - 10) / 490) * (w - 45);
+        const y = h - 22 - (total / 220) * (h - 35);
+        if (f === 10) ctxFg.moveTo(x, y);
+        else ctxFg.lineTo(x, y);
+      }
+      ctxFg.stroke();
+
+      const a100 = (calcFrancoisGarrisonAlpha(100, sal, temp, depth) + 0.00085 * turb * 1000).toFixed(1);
+      ctxFg.textAlign = 'left';
+      ctxFg.fillStyle = '#FFF';
+      ctxFg.font = 'bold 10px monospace';
+      ctxFg.fillText(`α(100kHz) = ${a100} dB/km`, 42, 20);
+      ctxFg.fillStyle = isHighTurb ? '#FF5252' : '#00E5FF';
+      ctxFg.font = '9px monospace';
+      ctxFg.fillText(`(Mud Penalty: +${(0.00085 * turb * 1000).toFixed(1)} dB/km)`, 42, 33);
+    }
+
+    function drawTransmissionLoss(turb, sal, temp, depth) {
+      const w = canvasTl.width, h = canvasTl.height;
+      ctxTl.clearRect(0, 0, w, h);
+
+      const xMargin = 35, yMargin = 22;
+      const plotW = w - xMargin - 10;
+      const plotH = h - yMargin - 12;
+
+      // Blind Zone Background (>80 dB) vs Safe Zone (<80 dB)
+      const yThresh = h - yMargin - (80 / 120) * plotH;
+      ctxTl.fillStyle = 'rgba(255, 82, 82, 0.12)';
+      ctxTl.fillRect(xMargin, 12, plotW, yThresh - 12);
+      ctxTl.fillStyle = 'rgba(0, 230, 118, 0.08)';
+      ctxTl.fillRect(xMargin, yThresh, plotW, h - yMargin - yThresh);
+
+      // Grid
+      ctxTl.strokeStyle = '#1E293B';
+      ctxTl.lineWidth = 0.8;
+      ctxTl.beginPath();
+      for (let loss = 0; loss <= 120; loss += 40) {
+        const y = h - yMargin - (loss / 120) * plotH;
+        ctxTl.moveTo(xMargin, y); ctxTl.lineTo(w - 10, y);
+      }
+      const xDistances = [50, 150, 300, 500];
+      xDistances.forEach(dist => {
+        const x = xMargin + ((dist - 10) / 490) * plotW;
+        ctxTl.moveTo(x, 12); ctxTl.lineTo(x, h - yMargin);
+      });
+      ctxTl.stroke();
+
+      // Axis Labels
+      ctxTl.fillStyle = '#64748B';
+      ctxTl.font = '9px monospace';
+      ctxTl.textAlign = 'right';
+      for (let loss = 0; loss <= 120; loss += 40) {
+        const y = h - yMargin - (loss / 120) * plotH;
+        ctxTl.fillText(`${loss}dB`, xMargin - 4, y + 3);
+      }
+      ctxTl.textAlign = 'center';
+      xDistances.forEach(dist => {
+        const x = xMargin + ((dist - 10) / 490) * plotW;
+        ctxTl.fillText(`${dist}m`, x, h - 8);
+      });
+
+      // 80 dB Detection Limit Line
+      ctxTl.strokeStyle = '#FF5252';
+      ctxTl.lineWidth = 1.4;
+      ctxTl.setLineDash([4, 4]);
+      ctxTl.beginPath();
+      ctxTl.moveTo(xMargin, yThresh); ctxTl.lineTo(w - 10, yThresh);
+      ctxTl.stroke();
+      ctxTl.setLineDash([]);
+      ctxTl.fillStyle = '#FF5252';
+      ctxTl.font = 'bold 9px monospace';
+      ctxTl.textAlign = 'left';
+      ctxTl.fillText('80 dB Vision Limit (Ceiling)', xMargin + 8, yThresh - 4);
+
+      const a100_per_m = (calcFrancoisGarrisonAlpha(100, sal, temp, depth) + 0.00085 * turb * Math.pow(1.0, 1.35) * 1000.0) / 1000.0;
+      const a450_per_m = (calcFrancoisGarrisonAlpha(450, sal, temp, depth) + 0.00085 * turb * Math.pow(4.5, 1.35) * 1000.0) / 1000.0;
+
+      // 100 kHz (Cyan Line - Deep Penetration)
+      ctxTl.strokeStyle = '#00E5FF';
+      ctxTl.lineWidth = 2.4;
+      ctxTl.beginPath();
+      for (let r = 10; r <= 500; r += 5) {
+        const tl = Math.min(120, 20 * Math.log10(r) + a100_per_m * r);
+        const x = xMargin + ((r - 10) / 490) * plotW;
+        const y = h - yMargin - (tl / 120) * plotH;
+        if (r === 10) ctxTl.moveTo(x, y);
+        else ctxTl.lineTo(x, y);
+      }
+      ctxTl.stroke();
+
+      // 450 kHz (Red Line - High Res)
+      ctxTl.strokeStyle = '#FF5252';
+      ctxTl.lineWidth = 2.4;
+      ctxTl.beginPath();
+      let crossX = null, crossY = null, crossDist = null;
+      for (let r = 10; r <= 500; r += 5) {
+        const tl = 20 * Math.log10(r) + a450_per_m * r;
+        const clampedTl = Math.min(120, tl);
+        const x = xMargin + ((r - 10) / 490) * plotW;
+        const y = h - yMargin - (clampedTl / 120) * plotH;
+        if (r === 10) ctxTl.moveTo(x, y);
+        else ctxTl.lineTo(x, y);
+
+        if (tl >= 80 && crossDist === null) {
+          crossDist = r;
+          crossX = x;
+          crossY = yThresh;
+        }
+      }
+      ctxTl.stroke();
+
+      // Crossing Marker
+      if (crossX && crossDist < 500) {
+        ctxTl.fillStyle = '#FF5252';
+        ctxTl.beginPath();
+        ctxTl.arc(crossX, crossY, 4, 0, 2 * Math.PI);
+        ctxTl.fill();
+        ctxTl.font = 'bold 9px monospace';
+        ctxTl.textAlign = 'center';
+        ctxTl.fillText(`Blind @ ${crossDist}m`, crossX, crossY - 8);
+      }
+
+      // Legend
+      ctxTl.textAlign = 'left';
+      ctxTl.fillStyle = '#00E5FF';
+      ctxTl.font = 'bold 9px monospace';
+      ctxTl.fillText(`● 100 kHz (Safe to >500m)`, xMargin + 8, h - 8);
+      ctxTl.fillStyle = '#FF5252';
+      ctxTl.fillText(`● 450 kHz (Limited)`, xMargin + 175, h - 8);
+    }
+
+    [sTurb, sSal, sDepth, sTemp, sAlpha, sFs].forEach(el => el.addEventListener('input', update));
+    update();
+  </script>
+</body>
+
+</html>

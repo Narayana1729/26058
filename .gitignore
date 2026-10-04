@@ -1,0 +1,18 @@
+# Dependencies & build outputs
+node_modules/
+.npm/
+dist/
+build/
+*.pyc
+__pycache__/
+.pytest_cache/
+.DS_Store
+
+# Temporary & intermediate simulation cache
+*.raw
+*.log
+*.tmp
+
+# IDE files
+.vscode/
+.idea/
