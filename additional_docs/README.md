@@ -16,6 +16,8 @@ additional_docs/
 │   └── MASTER_PIN_MAP.md                    # Authoritative hardware pin & register mapping
 │
 ├── presentation_slides/                     # Ready-to-insert high-resolution (300 DPI) slide graphics
+│   ├── dual_loop_adaptation_clean_white.png # Flagship Dual-Loop Architecture (White Theme)
+│   ├── dual_loop_adaptation_slide.png       # Flagship Dual-Loop Architecture (Dark / Cyber Theme)
 │   ├── ocean_sdr_flow_chart.png             # Adaptive signal processing & environmental sounding flowchart
 │   ├── simple_architecture_clean_white.png  # 5-stage system architecture (White Theme)
 │   ├── ocean_sdr_simple_architecture.png    # 5-stage system architecture (Dark / Cyber Theme)

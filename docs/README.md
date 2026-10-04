@@ -21,7 +21,13 @@ This directory contains the formal engineering reports, design specifications, v
 ---
 
 ## 🖼️ Architectural Figures & System Schematics
-* **`assets/`**: High-resolution system block diagrams, Proteus VSM co-simulation schematics, and AUV payload pod mechanical CAD renderings.
-* **`exp02_frequency.png`**: Frequency selection vs. water turbidity empirical study.
-* **`exp03_closed_loop.png`**: Two-stage closed-loop adaptation simulation trace.
+* **`dual_loop_adaptation_clean_white.png`**: Flagship dual-loop adaptation architecture diagram (Loop 1: Environmental Acoustic Prior; Loop 2: Hardware Health & Energy Governor).
+* **`dual_loop_adaptation_slide.png`**: Cyber-dark edition of the dual-loop architecture for high-contrast presentation screens.
+* **`ocean_sdr_flow_chart.png`**: Complete end-to-end flowchart from environmental sounding to AUV `$SONAR` NMEA telemetry.
+* **`simple_architecture_clean_white.png`**: 5-stage simplified hardware signal chain and closed-loop feedback pipeline.
+* **`hardware_and_software_card.png`**: High-density component breakdown with DAC and 100 MHz Digital Storage Oscilloscope bench metrology.
+* **`technologies_and_sources_slide.png`**: Dual-section tools, mathematical standards, and oceanographic data sources.
+* **`all_windows_benchmark_theme.png`**: Comprehensive windowing comparison with individual time/frequency micro-sparklines.
+* **`exp03_closed_loop.png`**: In-situ electrical pulse energy and thermal throttling simulation trace.
 * **`exp04_hfm_lfm.png`**: Doppler tolerance comparison between LFM and HFM chirps under relative velocity shifts.
+* **`assets/`**: High-resolution system block diagrams, Proteus VSM co-simulation schematics, and AUV payload pod mechanical CAD renderings.
